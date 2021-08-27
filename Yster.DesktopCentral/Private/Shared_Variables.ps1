@@ -8,8 +8,9 @@ $Patch_Status_Mapping = @{
 }
 
 $Approval_Status_Mapping = @{
+    'NotApproved' = 0
     'Approved'    = 211
-    'NotApproved' = 212
+    'Declined'    = 212
 }
 
 $Severity_Mapping = @{
@@ -18,4 +19,11 @@ $Severity_Mapping = @{
     'Moderate'  = 2
     'Important' = 3
     'Critical'  = 4
+}
+
+$Health_Mapping = @{
+    'Unknown'          = 0
+    'Healthy'          = 1
+    'Vulnerable'       = 2
+    'HighlyVulnerable' = 3
 }
