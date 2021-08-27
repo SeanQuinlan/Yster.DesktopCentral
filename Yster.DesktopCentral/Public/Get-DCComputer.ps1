@@ -59,32 +59,8 @@ function Get-DCComputer {
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
-    # branch office filters with spaces?
-
     try {
-        $API_Path = 'som/computers'
-        $Filters = New-Object -TypeName 'System.Collections.Generic.List[String]'
-        if ($PSBoundParameters.ContainsKey('Domain')) {
-            $Additional_Filter = 'domainfilter={0}' -f $Domain
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('BranchOffice')) {
-            $Additional_Filter = 'branchofficefilter={0}' -f $BranchOffice
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('ResourceID')) {
-            $Additional_Filter = 'residfilter={0}' -f $ResourceID
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('LiveStatus')) {
-            $Additional_Filter = 'liveStatusfilter={0}' -f $x
-            $Filters.Add($Additional_Filter)
-        }
-
-        if ($Filters.Count) {
-            $API_Path += '?{0}' -f ($Filters -join '&')
-        }
-
+        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'som/computers'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

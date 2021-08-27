@@ -36,7 +36,6 @@ function Get-DCDeploymentPolicies {
 
     try {
         $API_Path = 'patch/deploymentpolicies'
-
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

@@ -27,3 +27,9 @@ $Health_Mapping = @{
     'Vulnerable'       = 2
     'HighlyVulnerable' = 3
 }
+
+$LiveStatus_Mapping = @{
+    'Live'    = 1
+    'Down'    = 2
+    'Unknown' = 3
+}

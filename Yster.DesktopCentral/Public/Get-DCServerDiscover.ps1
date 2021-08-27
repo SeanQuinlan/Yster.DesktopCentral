@@ -36,7 +36,6 @@ function Get-DCServerDiscover {
 
     try {
         $API_Path = 'desktop/discover'
-
         $Query_Parameters = @{
             'HostName' = $HostName
             'Port'     = $Port

@@ -36,7 +36,6 @@ function Get-DCServerProperties {
 
     try {
         $API_Path = 'desktop/serverproperties'
-
         $Query_Parameters = @{
             'HostName' = $HostName
             'Port'     = $Port

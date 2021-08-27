@@ -89,8 +89,6 @@ function Get-DCAllPatchDetails {
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
-    # branch office filters with spaces?
-
     # testing
     # -------
     # [x] domain
@@ -103,45 +101,7 @@ function Get-DCAllPatchDetails {
     # [x] severity
 
     try {
-        $API_Path = 'patch/allpatchdetails'
-        $Filters = New-Object -TypeName 'System.Collections.Generic.List[String]'
-        if ($PSBoundParameters.ContainsKey('Domain')) {
-            $Additional_Filter = 'domainfilter={0}' -f $Domain
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('BranchOffice')) {
-            $Additional_Filter = 'branchofficefilter={0}' -f $BranchOffice
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('CustomGroup')) {
-            $Additional_Filter = 'customgroupfilter={0}' -f $CustomGroup
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('Platform')) {
-            $Additional_Filter = 'platformfilter={0}' -f $Platform
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('PatchID')) {
-            $Additional_Filter = 'patchid={0}' -f $PatchID
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('BulletinID')) {
-            $Additional_Filter = 'bulletinid={0}' -f $BulletinID
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('PatchStatus')) {
-            $Additional_Filter = 'patchstatusfilter={0}' -f $Patch_Status_Mapping[$PatchStatus]
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('Severity')) {
-            $Additional_Filter = 'severityfilter={0}' -f $Severity_Mapping[$Severity]
-            $Filters.Add($Additional_Filter)
-        }
-
-        if ($Filters.Count) {
-            $API_Path += '?{0}' -f ($Filters -join '&')
-        }
-
+        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allpatchdetails'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

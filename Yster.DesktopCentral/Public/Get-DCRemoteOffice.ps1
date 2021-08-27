@@ -36,7 +36,6 @@ function Get-DCRemoteOffice {
 
     try {
         $API_Path = 'som/remoteoffice'
-
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

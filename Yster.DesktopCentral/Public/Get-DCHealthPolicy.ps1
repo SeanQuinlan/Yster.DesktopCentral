@@ -36,7 +36,6 @@ function Get-DCHealthPolicy {
 
     try {
         $API_Path = 'patch/healthpolicy'
-
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

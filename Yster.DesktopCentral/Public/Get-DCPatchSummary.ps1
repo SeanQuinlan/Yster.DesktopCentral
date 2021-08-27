@@ -36,7 +36,6 @@ function Get-DCPatchSummary {
 
     try {
         $API_Path = 'patch/summary'
-
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

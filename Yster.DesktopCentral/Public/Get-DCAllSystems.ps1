@@ -77,49 +77,17 @@ function Get-DCAllSystems {
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
-    # branch office filters with spaces?
-
     # testing
     # -------
     # [x] domain
-    # [ ] branch office
+    # [x] branch office
     # [ ] custom group
     # [x] platform
     # [x] resourceid
     # [x] health
 
     try {
-        $API_Path = 'patch/allsystems'
-        $Filters = New-Object -TypeName 'System.Collections.Generic.List[String]'
-        if ($PSBoundParameters.ContainsKey('Domain')) {
-            $Additional_Filter = 'domainfilter={0}' -f $Domain
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('BranchOffice')) {
-            $Additional_Filter = 'branchofficefilter={0}' -f $BranchOffice
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('CustomGroup')) {
-            $Additional_Filter = 'customgroupfilter={0}' -f $CustomGroup
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('Platform')) {
-            $Additional_Filter = 'platformfilter={0}' -f $Platform
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('ResourceID')) {
-            $Additional_Filter = 'resid={0}' -f $ResourceID
-            $Filters.Add($Additional_Filter)
-        }
-        if ($PSBoundParameters.ContainsKey('Health')) {
-            $Additional_Filter = 'healthfilter={0}' -f $Health_Mapping[$Health]
-            $Filters.Add($Additional_Filter)
-        }
-
-        if ($Filters.Count) {
-            $API_Path += '?{0}' -f ($Filters -join '&')
-        }
-
+        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allsystems'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

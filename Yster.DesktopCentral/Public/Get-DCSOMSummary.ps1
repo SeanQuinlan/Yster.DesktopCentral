@@ -36,7 +36,6 @@ function Get-DCSOMSummary {
 
     try {
         $API_Path = 'som/summary'
-
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName
