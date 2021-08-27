@@ -3,11 +3,17 @@ function Get-DCAPIToken {
     .SYNOPSIS
         Authenticates to the Desktop Central server and retrieves an API Token.
     .DESCRIPTION
+        Connects to the authentication URL in order to retrieve an API Token.
 
+        If two-factor auth has been enabled on the server, the OTP parameter will be required.
+
+        Provide credentials in the form of "DOMAIN\USERNAME" for AD authentication, or just "USERNAME" for local authentication.
     .EXAMPLE
+        Get-DCAPIToken -HostName DCSERVER -Credential 'DOMAIN\User'
 
+        Connect as the AD user "DOMAIN\User" with no OTP. You will be prompted to enter the password for the user.
     .NOTES
-
+        https://www.manageengine.com/products/desktop-central/api/index.html
     #>
 
     [CmdletBinding()]
@@ -52,44 +58,46 @@ function Get-DCAPIToken {
 
     try {
         $Base64_Password = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Credential.GetNetworkCredential().Password))
+        $API_Path = 'desktop/authentication'
+        $Auth_Options = New-Object -TypeName 'System.Collections.Generic.List[String]'
         if ($Credential.UserName -match '\\') {
             Write-Verbose ('{0}|Domain authentication used' -f $Function_Name)
             $DomainName = ($Credential.UserName -split '\\')[0].ToLower()
             $UserName = ($Credential.UserName -split '\\')[1]
-            $Query_URL = 'desktop/authentication?username={0}&password={1}&auth_type=ad_authentication&domainName={2}' -f $UserName, $Base64_Password, $DomainName
+            $Auth_Options.Add('username={0}' -f $UserName)
+            $Auth_Options.Add('domainName={0}' -f $DomainName)
+            $Auth_Options.Add('password={0}' -f $Base64_Password)
+            $Auth_Options.Add('auth_type=ad_authentication')
         } else {
             Write-Verbose ('{0}|Local authentication used' -f $Function_Name)
-            $Query_URL = 'desktop/authentication?username={0}&password={1}&auth_type=local_authentication' -f $Credential.UserName, $Base64_Password
+            $Auth_Options.Add('username={0}' -f $Credential.UserName)
+            $Auth_Options.Add('password={0}' -f $Base64_Password)
+            $Auth_Options.Add('auth_type=local_authentication')
         }
+        $API_Path += '?{0}' -f ($Auth_Options -join '&')
 
         $Query_Parameters = @{
             'HostName' = $HostName
             'Port'     = $Port
-            'APIPath'  = $Query_URL
+            'APIPath'  = $API_Path
             'Method'   = 'POST'
         }
-        Write-Verbose ('{0}|Calling Invoke-DCQuery for Authentication' -f $Function_Name)
+        Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
 
-        $Result_To_Return = @{
-            'Raw'                = $Query_Return
-            'AuthToken'          = $Query_Return.authentication.auth_data.auth_token
-            'IsTwoFactorEnabled' = $Query_Return.authentication.two_factor_data.is_TwoFactor_Enabled
-        }
-
-        if ($Result_To_Return['IsTwoFactorEnabled']) {
+        if ($Query_Return.two_factor_data.is_TwoFactor_Enabled) {
             Write-Verbose ('{0}|Two Factor Auth is enabled' -f $Function_Name)
-            if ($Query_Return.authentication.two_factor_data.google_authenticator_key) {
+            if ($Query_Return.two_factor_data.google_authenticator_key) {
                 $Terminating_ErrorRecord_Parameters = @{
                     'Exception'    = 'System.ArgumentException'
                     'ID'           = 'DC-AuthenticatorNotConfigured'
                     'Category'     = 'AuthenticationError'
-                    'TargetObject' = $Query_URL
+                    'TargetObject' = $API_Path
                     'Message'      = 'OTP required but Authenticator is not yet configured'
                 }
                 $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                 $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-            } elseif ($Query_Return.authentication.two_factor_data.message -eq 'Google authentication already created for this user. Validate OTP') {
+            } elseif ($Query_Return.two_factor_data.message -eq 'Google authentication already created for this user. Validate OTP') {
                 if (-not $OTP) {
                     $Terminating_ErrorRecord_Parameters = @{
                         'Exception'    = 'System.ArgumentException'
@@ -104,7 +112,7 @@ function Get-DCAPIToken {
 
                 $OTP_Query_URL = 'desktop/authentication/otpValidate'
                 $OTP_Query_Body = @{
-                    'uid' = $Query_Return.authentication.two_factor_data.unique_userID
+                    'uid' = $Query_Return.two_factor_data.unique_userID
                     'otp' = "$OTP"
                 }
                 $OTP_Query_Parameters = @{
@@ -115,12 +123,11 @@ function Get-DCAPIToken {
                     'Body'     = $OTP_Query_Body
                 }
                 Write-Verbose ('{0}|Calling Invoke-DCQuery for OTP' -f $Function_Name)
-                $OTP_Query_Return = Invoke-DCQuery @OTP_Query_Parameters
-                $Result_To_Return['AuthToken'] = $OTP_Query_Return.authentication.auth_data.auth_token
+                $Query_Return = Invoke-DCQuery @OTP_Query_Parameters
             }
         }
 
-        $Result_To_Return | ConvertTo-SortedPSObject
+        $Query_Return
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {
