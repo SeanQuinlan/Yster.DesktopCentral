@@ -13,21 +13,27 @@ task Clean {
 
 task TestCode {
     Write-Build Yellow "`n`n`nTesting dev code before build"
-    $TestResult = Invoke-Pester -Script "$PSScriptRoot\Test\Unit" -Tag Unit -Show 'Header','Summary' -PassThru
-    if($TestResult.FailedCount -gt 0) {throw 'Tests failed'}
+    # Fixes for Pester v5
+    $PesterConfiguration = New-PesterConfiguration
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit" # -Script "$PSScriptRoot\Test\Unit"
+    $PesterConfiguration.Output.Verbosity = 'None' # -Show 'Header', 'Summary'
+    $PesterConfiguration.Run.PassThru = $true # -PassThru
+    $PesterConfiguration.Filter.Tag = 'Unit' # -Tag Unit
+    #$TestResult = Invoke-Pester -Script "$PSScriptRoot\Test\Unit" -Show 'Header', 'Summary' -Tag Unit -PassThru
+    $TestResult = Invoke-Pester -Configuration $PesterConfiguration
+    if ($TestResult.FailedCount -gt 0) {throw 'Tests failed'}
 }
 
 task CompilePSM {
     Write-Build Yellow "`n`n`nCompiling all code into single psm1"
     try {
         $BuildParams = @{}
-        if((Get-Command -ErrorAction stop -Name gitversion)) {
+        if ((Get-Command -ErrorAction stop -Name gitversion)) {
             $GitVersion = gitversion | ConvertFrom-Json | Select-Object -Expand FullSemVer
             $GitVersion = gitversion | ConvertFrom-Json | Select-Object -Expand InformationalVersion
             $BuildParams['SemVer'] = $GitVersion
         }
-    }
-    catch{
+    } catch {
         Write-Warning -Message 'gitversion not found, keeping current version'
     }
     Push-Location -Path "$BuildRoot\Source" -StackName 'InvokeBuildTask'
@@ -42,11 +48,20 @@ task MakeHelp -if (Test-Path -Path "$PSScriptRoot\Docs") {
 
 task TestBuild {
     Write-Build Yellow "`n`n`nTesting compiled module"
-    $Script =  @{Path="$PSScriptRoot\test\Unit"; Parameters=@{ModulePath=$Script:CompileResult.ModuleBase}}
+    # $Script = @{Path = "$PSScriptRoot\test\Unit"; Parameters = @{ModulePath = $Script:CompileResult.ModuleBase}}
+    # $Script = "$PSScriptRoot\Test\Unit"
     $CodeCoverage = (Get-ChildItem -Path $Script:CompileResult.ModuleBase -Filter *.psm1).FullName
-    $TestResult = Invoke-Pester -Script $Script -CodeCoverage $CodeCoverage -Show None -PassThru
+    # Fixes for Pester v5
+    $PesterConfiguration = New-PesterConfiguration
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit" # -Script $Script
+    $PesterConfiguration.CodeCoverage.Enabled = $true # -CodeCoverage $CodeCoverage
+    $PesterConfiguration.CodeCoverage.Path = $CodeCoverage
+    $PesterConfiguration.Output.Verbosity = 'None' # -Show None
+    $PesterConfiguration.Run.PassThru = $true # -PassThru
+    #$TestResult = Invoke-Pester -Script $Script -CodeCoverage $CodeCoverage -Show None -PassThru
+    $TestResult = Invoke-Pester -Configuration $PesterConfiguration
 
-    if($TestResult.FailedCount -gt 0) {
+    if ($TestResult.FailedCount -gt 0) {
         Write-Warning -Message "Failing Tests:"
         $TestResult.TestResult.Where{$_.Result -eq 'Failed'} | ForEach-Object -Process {
             Write-Warning -Message $_.Name
@@ -55,8 +70,11 @@ task TestBuild {
         throw 'Tests failed'
     }
 
-    $CodeCoverageResult = $TestResult | Convert-CodeCoverage -SourceRoot "$PSScriptRoot\Source" -Relative
-    $CodeCoveragePercent = $TestResult.CodeCoverage.NumberOfCommandsExecuted/$TestResult.CodeCoverage.NumberOfCommandsAnalyzed*100 -as [int]
+    # Fix for Pester v5 outputting a different object property
+    $TestResultConverted = [pscustomobject]@{'CodeCoverage' = [pscustomobject]@{ 'MissedCommands' = $TestResult.CodeCoverage.CommandsMissed }}
+    $CodeCoverageResult = $TestResultConverted | Convert-CodeCoverage -SourceRoot "$PSScriptRoot\Source"
+    # $CodeCoveragePercent = $TestResult.CodeCoverage.NumberOfCommandsExecuted / $TestResult.CodeCoverage.NumberOfCommandsAnalyzed * 100 -as [int]
+    $CodeCoveragePercent = $TestResult.CodeCoverage.CommandsExecutedCount / $TestResult.CodeCoverage.CommandsAnalyzedCount * 100 -as [int]
     Write-Verbose -Message "CodeCoverage is $CodeCoveragePercent%" -Verbose
     $CodeCoverageResult | Group-Object -Property SourceFile | Sort-Object -Property Count | Select-Object -Property Count, Name -Last 10
 }
@@ -64,4 +82,3 @@ task TestBuild {
 task . Clean, TestCode, Build
 
 task Build CompilePSM, MakeHelp, TestBuild
-
