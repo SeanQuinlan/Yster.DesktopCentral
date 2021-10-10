@@ -93,6 +93,8 @@
     PrivateData       = @{
 
         PSData = @{
+            # Prerelease string should be here, so we can set it
+            Prerelease = 'source'
 
             # Tags applied to this module. These help with module discovery in online galleries.
             # Tags = @()
