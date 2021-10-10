@@ -1,7 +1,7 @@
 # Some helpful links:
 # https://stackoverflow.com/questions/62497134/pester-5-0-2-beforeall-block-code-not-showing-up-in-describe-block
 
-Describe 'Function Validation' -Tags 'Module' {
+Describe 'Function Validation' -Tags 'Module', 'Unit' {
     $Module_Root = Join-Path -Path $PSScriptRoot -ChildPath '..\..\Source'
     $Module_Path = Get-ChildItem -Path $Module_Root -Filter 'Yster.DesktopCentral.psd1'
     $Module_Information = Import-Module -Name $Module_Path.PSPath -Force -ErrorAction 'Stop' -PassThru
@@ -62,10 +62,10 @@ Describe 'Function Validation' -Tags 'Module' {
     }
 
     Context 'Function variables' {
-        It '<FunctionName> has no global variables defined' -TestCases $TestCases {
-            $Function_Nodes = $Function_AST.FindAll( { $true }, $false) | Where-Object { $_.GetType().Name -eq 'VariableExpressionAst' }
-            $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -match 'global') } | Should -Be $null
-        }
+        # It '<FunctionName> has no global variables defined' -TestCases $TestCases {
+        #     $Function_Nodes = $Function_AST.FindAll( { $true }, $false) | Where-Object { $_.GetType().Name -eq 'VariableExpressionAst' }
+        #     $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -match 'global') } | Should -Be $null
+        # }
         It '<FunctionName> has Function_Name parameter declaration' -TestCases $TestCases {
             $Function_Name_Declaration = '$Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name'
             $Function_Nodes = $Function_AST.FindAll( { $true }, $false) | Where-Object { $_.GetType().Name -eq 'VariableExpressionAst' }
