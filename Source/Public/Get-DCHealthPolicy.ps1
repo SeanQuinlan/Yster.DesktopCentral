@@ -1,11 +1,13 @@
 function Get-DCHealthPolicy {
     <#
     .SYNOPSIS
-
+        Returns the criteria which determine whether a system is marked as highly vulnerable or vulnerable.
     .DESCRIPTION
-
+        Displays the number of patches that have to be missing on a system in each category in order to mark it as vulnerable or highly vulnerable.
     .EXAMPLE
+        Get-DCHealthPolicy -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns the health policy settings for the environment.
     .NOTES
         https://www.manageengine.com/patch-management/api/health-policy-patch-management.html
     #>

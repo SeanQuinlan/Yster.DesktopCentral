@@ -1,11 +1,13 @@
 function Invoke-DCDeclinePatch {
     <#
     .SYNOPSIS
-
+        Decline one or more patches for installation.
     .DESCRIPTION
-
+        Will invoke the decline process for the supplied Patch ID or IDs. They will be declined for all computers.
     .EXAMPLE
+        Invoke-DCDeclinePatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 12345,23456
 
+        Declines the supplied patches for installation on all devices.
     .NOTES
         https://www.manageengine.com/patch-management/api/decline-patch-patch-management.html
     #>

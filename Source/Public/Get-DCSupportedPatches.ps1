@@ -1,11 +1,17 @@
 function Get-DCSupportedPatches {
     <#
     .SYNOPSIS
-        Gets a list of all patches supported by Patch Manager Plus.
+        Gets a list of all patches supported by Patch Manager Plus, or filtered a number of ways.
     .DESCRIPTION
-
+        Returns all patches supported by Patch Manager Plus, or a list filtered on Patch ID, Bulletin ID, custom group, domain, etc
     .EXAMPLE
+        Get-DCSupportedPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns information on all patches supported by the server.
+    .EXAMPLE
+        Get-DCSupportedPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500049
+
+        Returns just the information on the patch with ID 500049.
     .NOTES
         https://www.manageengine.com/patch-management/api/supported-patches-patch-management.html
     #>
@@ -30,7 +36,7 @@ function Get-DCSupportedPatches {
         [Int]
         $Port = 8020,
 
-        # The Domain to filter on.
+        # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]

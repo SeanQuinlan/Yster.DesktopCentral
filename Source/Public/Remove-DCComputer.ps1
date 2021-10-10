@@ -1,11 +1,13 @@
 function Remove-DCComputer {
     <#
     .SYNOPSIS
-
+        Remove one or more devices from the server.
     .DESCRIPTION
-
+        Invokes the removal process for the resource ID or IDs supplied.
     .EXAMPLE
+        Remove-DCComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101,102
 
+        Removes the devices with IDs 101 and 102 from the server.
     .NOTES
         https://www.manageengine.com/patch-management/api/api-som-computer-actions.html
     #>

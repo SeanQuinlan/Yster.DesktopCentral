@@ -1,11 +1,17 @@
 function Get-DCSystemReport {
     <#
     .SYNOPSIS
-
+        Gets a list of all patches associated with a specific Resource ID.
     .DESCRIPTION
-
+        Returns a list of all patches related to the supplied Resource ID. The patches can be further filtered by platform, severity, status, etc.
     .EXAMPLE
+        Get-DCSystemReport -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
+        Returns details of all patches related to resource 101.
+    .EXAMPLE
+        Get-DCSystemReport -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101 -Severity Critical
+
+        Returns details of only critical patches related to resource 101.
     .NOTES
         https://www.manageengine.com/patch-management/api/system-report-patch-management.html
     #>
@@ -67,10 +73,10 @@ function Get-DCSystemReport {
 
     # testing
     # -------
-    # [ ] platform
-    # [ ] patchstatus
+    # [x] platform
+    # [x] patchstatus
     # [ ] approvalstatus
-    # [ ] severity
+    # [x] severity
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/systemreport'

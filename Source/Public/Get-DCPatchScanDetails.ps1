@@ -1,11 +1,17 @@
 function Get-DCPatchScanDetails {
     <#
     .SYNOPSIS
-
+        Gets the patch scan details of one or more devices.
     .DESCRIPTION
-
+        Outputs the patch scan details of all devices, or filtered by Resource ID, Custom Group, branch office, domain or other filters.
     .EXAMPLE
+        Get-DCPatchScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns the patch scan status of every device.
+    .EXAMPLE
+        Get-DCPatchScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+
+        Returns just the patch scan status of the device with ID 101.
     .NOTES
         https://www.manageengine.com/patch-management/api/patch-scan-details-patch-management.html
     #>
@@ -30,7 +36,7 @@ function Get-DCPatchScanDetails {
         [Int]
         $Port = 8020,
 
-        # The Domain to filter on.
+        # The NETBIOS name of The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]
@@ -85,13 +91,13 @@ function Get-DCPatchScanDetails {
 
     # testing
     # -------
-    # [ ] domain
+    # [x] domain
     # [ ] branch office
     # [ ] custom group
     # [x] platform
     # [x] resourceid
-    # [ ] health
-    # [ ] livestatus
+    # [x] health
+    # [x] livestatus
     # [x] agent installation
 
     try {

@@ -1,11 +1,13 @@
 function Get-DCPatchDBStatus {
     <#
     .SYNOPSIS
-
+        Gets the udpate status of the Patch DB.
     .DESCRIPTION
-
+        Returns the status of updating the Patch DB.
     .EXAMPLE
+        Get-DCPatchDBStatus -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns the status of the Patch DB update process.
     .NOTES
         https://www.manageengine.com/patch-management/api/db-update-status-patch-management.html
     #>

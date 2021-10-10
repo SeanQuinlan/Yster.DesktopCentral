@@ -1,11 +1,13 @@
 function Get-DCPatchApprovalSettings {
     <#
     .SYNOPSIS
-
+        Returns the patch approval setting.
     .DESCRIPTION
-
+        Outputs the status of patch approvals for the environment.
     .EXAMPLE
+        Get-DCPatchApprovalSettings -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns the patch approval setting for the environment.
     .NOTES
         https://www.manageengine.com/patch-management/api/approval-settings-patch-management.html
     #>

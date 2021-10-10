@@ -1,11 +1,13 @@
 function Get-DCRemoteOffice {
     <#
     .SYNOPSIS
-
+        Gets a list of remote offices, with details.
     .DESCRIPTION
-
+        Outputs a number of details about each remote office.
     .EXAMPLE
+        Get-DCRemoteOffice -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns all remote office details.
     .NOTES
         https://www.manageengine.com/products/desktop-central/api/api-som-remoteoffices.html
     #>

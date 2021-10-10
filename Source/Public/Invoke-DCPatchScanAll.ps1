@@ -1,11 +1,13 @@
 function Invoke-DCPatchScanAll {
     <#
     .SYNOPSIS
-
+        Start the patch scan process on all devices managed by the server.
     .DESCRIPTION
-
+        Invokes the patch scan process on every device in the environment.
     .EXAMPLE
+        Invoke-DCPatchScan -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Starts the patch scan process on all devices.
     .NOTES
         https://www.manageengine.com/patch-management/api/patch-scan-all-patch-management.html
     #>

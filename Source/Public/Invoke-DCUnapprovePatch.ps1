@@ -1,11 +1,13 @@
 function Invoke-DCUnapprovePatch {
     <#
     .SYNOPSIS
-
+        Unapprove one or more patches for installation.
     .DESCRIPTION
-
+        Will invoke the unapprove process for the supplied Patch ID or IDs. They will be unapproved for all computers.
     .EXAMPLE
+        Invoke-DCUnapprovePatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 12345,23456
 
+        Unapproves the supplied patches for installation on all devices.
     .NOTES
         https://www.manageengine.com/patch-management/api/unapprove-patch-patch-management.html
     #>
@@ -31,7 +33,7 @@ function Invoke-DCUnapprovePatch {
         $Port = 8020,
 
         # The PatchID or IDs to decline.
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Int[]]
         $PatchID

@@ -1,11 +1,13 @@
 function Invoke-DCPatchScan {
     <#
     .SYNOPSIS
-
+        Start the patch scan process on the supplied resource ID or IDs.
     .DESCRIPTION
-
+        Invokes the process to scan a device for patches. Requires at least one resource ID to be supplied.
     .EXAMPLE
+        Invoke-DCPatchScan -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101,102,103
 
+        Starts the patch scan process on the specified resource IDs.
     .NOTES
         https://www.manageengine.com/patch-management/api/patch-scan-patch-management.html
     #>

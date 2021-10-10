@@ -1,11 +1,13 @@
 function Get-DCViewConfiguration {
     <#
     .SYNOPSIS
-
+        Gets a list of patch configurations from the server.
     .DESCRIPTION
-
+        Returns all patch configurations available on the server, or filtered by domain, branch office or status.
     .EXAMPLE
+        Get-DCViewConfiguration -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns all the patch configurations in the environment.
     .NOTES
         https://www.manageengine.com/patch-management/api/view-configuration-patch-management.html
     #>
@@ -30,7 +32,7 @@ function Get-DCViewConfiguration {
         [Int]
         $Port = 8020,
 
-        # The Domain to filter on.
+        # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]

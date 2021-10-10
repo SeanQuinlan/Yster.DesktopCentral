@@ -1,11 +1,13 @@
 function Get-DCPatchSummary {
     <#
     .SYNOPSIS
-
+        Gets some basic information about patching in the environment.
     .DESCRIPTION
-
+        Returns some summary information related to patching, such as a summary of vulnerable systems, a patch summary or a summary of patch scanning.
     .EXAMPLE
+        Get-DCPatchSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns some summary data related to patching.
     .NOTES
         https://www.manageengine.com/patch-management/api/patch-summary-patch-management.html
     #>

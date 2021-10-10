@@ -1,11 +1,13 @@
 function Install-DCAgent {
     <#
     .SYNOPSIS
-
+        Installs the agent on the supplied resource ID or IDs.
     .DESCRIPTION
-
+        Installs the Desktop Central agent on the resource with the given ID or IDs.
     .EXAMPLE
+        Install-DCAgent -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
+        Attempts to install the Desktop Central agent on the resource with ID 101.
     .NOTES
         https://www.manageengine.com/patch-management/api/api-som-computer-actions.html
     #>

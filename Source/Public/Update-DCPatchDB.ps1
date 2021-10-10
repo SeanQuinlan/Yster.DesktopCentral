@@ -1,11 +1,13 @@
 function Update-DCPatchDB {
     <#
     .SYNOPSIS
-
+        Start the patch database update process.
     .DESCRIPTION
-
+        This invokes the patch database update process for the environment.
     .EXAMPLE
+        Update-DCPatchDB -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Starts the patch DB update process for the server.
     .NOTES
         https://www.manageengine.com/patch-management/api/update-db-patch-management.html
     #>

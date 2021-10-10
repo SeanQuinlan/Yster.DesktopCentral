@@ -1,11 +1,13 @@
 function Invoke-DCApprovePatch {
     <#
     .SYNOPSIS
-
+        Approve one or more patches for installation.
     .DESCRIPTION
-
+        Will invoke the approval process for the supplied Patch ID or IDs. They will be approved for all computers.
     .EXAMPLE
+        Invoke-DCApprovePatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 12345,23456
 
+        Approves the supplied patches for installation on all devices.
     .NOTES
         https://www.manageengine.com/patch-management/api/approve-patch-patch-management.html
     #>
@@ -30,7 +32,7 @@ function Invoke-DCApprovePatch {
         [Int]
         $Port = 8020,
 
-        # The PatchID or IDs to decline.
+        # The PatchID or IDs to approve.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int[]]

@@ -66,7 +66,7 @@ function Invoke-DCQuery {
     $API_Uri = 'http://{0}:{1}/api/{2}/{3}' -f $HostName, $Port, $API_Version, $APIPath
 
     try {
-        $global:API_Parameters = @{
+        $API_Parameters = @{
             'Uri'         = $API_Uri
             'Method'      = $Method
             'ContentType' = 'application/json'
@@ -79,7 +79,7 @@ function Invoke-DCQuery {
                 'Authorization' = $AuthToken
             }
         }
-        $global:REST_Response = Invoke-RestMethod @API_Parameters
+        $REST_Response = Invoke-RestMethod @API_Parameters
         Write-Verbose ('{0}|Response status: {1}' -f $Function_Name, $REST_Response.status)
 
         if ($REST_Response.status -eq 'error') {

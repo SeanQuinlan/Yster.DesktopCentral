@@ -35,7 +35,7 @@ function Get-DCAllPatches {
         [Int]
         $Port = 8020,
 
-        # The Domain to filter on.
+        # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]

@@ -1,11 +1,13 @@
 function Get-DCDownloadedPatches {
     <#
     .SYNOPSIS
-
+        Gets a list of all downloaded patches.
     .DESCRIPTION
-
+        Outputs a list of all patches that have been downloaded.
     .EXAMPLE
+        Get-DCDownloadedPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns properties for all downloaded patches.
     .NOTES
         https://www.manageengine.com/patch-management/api/get-downloaded-patch.html
     #>

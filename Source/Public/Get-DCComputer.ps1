@@ -1,11 +1,17 @@
 function Get-DCComputer {
     <#
     .SYNOPSIS
-
+        Gets details of one or more computers.
     .DESCRIPTION
-
+        Gets a list of all computers in the environment, or filtered by Resource ID, status, office, or domain.
     .EXAMPLE
+        Get-DCComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Gets a list of all registered computers.
+    .EXAMPLE
+        Get-DCComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceId 101
+
+        Returns just the properties of the computer with ID 101.
     .NOTES
         https://www.manageengine.com/patch-management/api/api-som-computers.html
     #>
@@ -30,7 +36,7 @@ function Get-DCComputer {
         [Int]
         $Port = 8020,
 
-        # The Domain to filter on.
+        # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]

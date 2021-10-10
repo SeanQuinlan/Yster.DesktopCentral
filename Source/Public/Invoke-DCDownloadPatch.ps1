@@ -1,11 +1,13 @@
 function Invoke-DCDownloadPatch {
     <#
     .SYNOPSIS
-
+        Download one or more patches.
     .DESCRIPTION
-
+        Will invoke the download process for the supplied Patch ID or IDs.
     .EXAMPLE
+        Invoke-DCDownloadPatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 12345,23456
 
+        Starts the download process for the supplied patch IDs.
     .NOTES
         https://www.manageengine.com/patch-management/api/download-patch-patch-management.html
     #>
@@ -30,7 +32,7 @@ function Invoke-DCDownloadPatch {
         [Int]
         $Port = 8020,
 
-        # The PatchID or IDs to decline.
+        # The PatchID or IDs to download.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int[]]

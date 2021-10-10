@@ -1,11 +1,13 @@
 function Get-DCSOMSummary {
     <#
     .SYNOPSIS
-
+        Gets summary information about the number of devices in the Scope of Management.
     .DESCRIPTION
-
+        Outputs just the number of devices of each live status, installation status and the grouping of the last time they contacted the server.
     .EXAMPLE
+        Get-DCSOMSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns basic summary information for the scope of management of the server.
     .NOTES
         https://www.manageengine.com/products/desktop-central/api/api-som-summary.html
     #>

@@ -1,11 +1,15 @@
 function Get-DCServerDiscover {
     <#
     .SYNOPSIS
-
+        Gets some basic information about the Desktop Central Server.
     .DESCRIPTION
+        Gets a basic set of options for the Desktop Central server, such as what type of authentication is supported.
 
+        This information does not require authentication first, so can be used to determine how to connect to a server.
     .EXAMPLE
+        Get-DCServerDiscover -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
+        Returns basic properties for the server.
     .NOTES
         https://www.manageengine.com/patch-management/api/api-common-discover.html
     #>
