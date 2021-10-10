@@ -58,7 +58,7 @@ function Add-Filters {
         $Filters.Add('healthfilter={0}' -f $Health_Mapping[$BoundParameters['Health']])
     }
     if ($BoundParameters.ContainsKey('LiveStatus')) {
-        $Filters.Add('liveStatusfilter={0}' -f $LiveStatus_Mapping[$BoundParameters['LiveStatus']])
+        $Filters.Add('livestatusfilter={0}' -f $LiveStatus_Mapping[$BoundParameters['LiveStatus']])
     }
     if ($BoundParameters.ContainsKey('PatchID')) {
         $Filters.Add('patchid={0}' -f $BoundParameters['PatchID'])
