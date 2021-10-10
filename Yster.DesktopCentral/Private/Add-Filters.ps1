@@ -70,7 +70,10 @@ function Add-Filters {
         $Filters.Add('platformfilter={0}' -f $BoundParameters['Platform'])
     }
     if ($BoundParameters.ContainsKey('ResourceID')) {
-        $Filters.Add('residfilter={0}' -f $BoundParameters['ResourceID'])
+        $Filters.Add('resid={0}' -f $BoundParameters['ResourceID'])
+    }
+    if ($BoundParameters.ContainsKey('ResourceIDFilter')) {
+        $Filters.Add('residfilter={0}' -f $BoundParameters['ResourceIDFilter'])
     }
     if ($BoundParameters.ContainsKey('Severity')) {
         $Filters.Add('severityfilter={0}' -f $Severity_Mapping[$BoundParameters['Severity']])

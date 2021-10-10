@@ -60,6 +60,10 @@ function Get-DCComputer {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
+        if ($PSBoundParameters.ContainsKey('ResourceID')) {
+            [void]$PSBoundParameters.Remove('ResourceID')
+            [void]$PSBoundParameters.Add('ResourceIDFilter', $ResourceID)
+        }
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'som/computers'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
