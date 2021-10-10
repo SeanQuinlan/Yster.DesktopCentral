@@ -1,18 +1,18 @@
-version: 0.1.0.{build}
+# Custom Appveyor settings
 
-environment:
-  matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      PowerShellEdition: PowerShellCore
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      PowerShellEdition: WindowsPowerShell
+image: Visual Studio 2017
 
-skip_commits:
-  message: /updated readme.*|update readme.*s/
-build: off
+matrix:
+  # immediately finish build on failure
+  fast_finish: true
 
-# Kick off the CI/CD pipeline
-test_script:
-  - ps:   if ($env:PowerShellEdition -eq 'WindowsPowerShell') { . .\build.ps1 -Task Test }
-  - pwsh: if ($env:PowerShellEdition -eq 'PowerShellCore')    { . .\build.ps1 -Task Test }
+# Scripts that run after cloning
+install:
+  - ps: Install-Module -Name InvokeBuild, PowerShellGet, Pester -SkipPublisherCheck -Force
+build_script:
+  - ps: |
+      $ErrorActionPreference = 'Stop'
+      Invoke-Build
+      Compress-Archive -Path ".\bin\$Env:APPVEYOR_PROJECT_NAME" -DestinationPath ".\$Env:APPVEYOR_PROJECT_NAME.zip"
+      Push-AppveyorArtifact ".\$Env:APPVEYOR_PROJECT_NAME.zip"
 
