@@ -1,12 +1,32 @@
-# Dot source public/private functions
-$public = @(Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Public/*.ps1')  -Recurse -ErrorAction Stop)
-$private = @(Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Private/*.ps1') -Recurse -ErrorAction Stop)
-foreach ($import in @($public + $private)) {
-    try {
-        . $import.FullName
-    } catch {
-        throw "Unable to dot source [$($import.FullName)]"
-    }
+$ModulePath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+$BuildData = Import-LocalizedData -BaseDirectory $ModulePath -FileName build.psd1
+
+Push-Location -Path $ModulePath -StackName 'DevModuleLoader'
+$Scripts = Get-ChildItem -Path $BuildData.SourceDirectories -File -Filter *.ps1 | Select-Object -ExpandProperty FullName
+if (-not [string]::IsNullOrWhiteSpace($BuildData.Prefix) -and (Test-Path -Path $BuildData.Prefix)) {
+    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData.Prefix)))
+}
+foreach ($Script in $Scripts) {
+    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($Script)))
+}
+if (-not [string]::IsNullOrWhiteSpace($BuildData.Suffix) -and (Test-Path -Path $BuildData.Suffix)) {
+    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData.Suffix)))
+}
+$SearchRecursive = $true
+$SearchRootOnly = $false
+$PublicScriptBlock = [ScriptBlock]::Create('{0}' -f (Get-ChildItem -Path $BuildData.PublicFilter -ErrorAction SilentlyContinue | Get-Content -Raw | Out-String))
+$PublicFunctions = $PublicScriptBlock.Ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst]}, $SearchRootOnly).Name
+$PublicAlias = $PublicScriptBlock.Ast.FindAll({ $args[0] -is [System.Management.Automation.Language.ParamBlockAst] }, $SearchRecursive).Where{$_.TypeName.FullName -eq 'alias'}.PositionalArguments.Value
+
+$ExportParam = @{}
+if ($PublicFunctions) {
+    $ExportParam.Add('Function', $PublicFunctions)
+}
+if ($PublicAlias) {
+    $ExportParam.Add('Alias', $PublicAlias)
+}
+if ($ExportParam.Keys.Count -gt 0) {
+    Export-ModuleMember @ExportParam
 }
 
-Export-ModuleMember -Function $public.Basename
+Pop-Location -StackName 'DevModuleLoader'
