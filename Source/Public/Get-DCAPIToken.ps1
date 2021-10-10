@@ -32,7 +32,7 @@ function Get-DCAPIToken {
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty,
+        $Credential,
 
         # The hostname of the Desktop Central server.
         [Parameter(Mandatory = $true)]
