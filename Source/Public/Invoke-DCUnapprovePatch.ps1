@@ -32,7 +32,7 @@ function Invoke-DCUnapprovePatch {
         [Int]
         $Port = 8020,
 
-        # The PatchID or IDs to decline.
+        # The PatchID or IDs to unapprove.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Int[]]

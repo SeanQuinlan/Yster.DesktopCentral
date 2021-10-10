@@ -56,9 +56,9 @@ function Get-DCViewConfiguration {
 
     # testing
     # -------
-    # [ ] domain
-    # [ ] branch office
-    # [ ] config status
+    # [ ] domain - gives error no matter what
+    # [ ] branch office - gives error no matter what
+    # [ ] config status - no error, but none of the set work
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/viewconfig'
