@@ -4,13 +4,16 @@ $BuildData = Import-LocalizedData -BaseDirectory $ModulePath -FileName build.psd
 Push-Location -Path $ModulePath -StackName 'DevModuleLoader'
 $Scripts = Get-ChildItem -Path $BuildData.SourceDirectories -File -Filter *.ps1 | Select-Object -ExpandProperty FullName
 if (-not [string]::IsNullOrWhiteSpace($BuildData.Prefix) -and (Test-Path -Path $BuildData.Prefix)) {
-    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData.Prefix)))
+    # The ScriptBlock::Create method needs a fully-qualified path, so resolve the path if it's invoked from a relative path name
+    $BuildData_Prefix_Path = (Resolve-Path -Path $BuildData.Prefix).Path
+    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData_Prefix_Path)))
 }
 foreach ($Script in $Scripts) {
     . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($Script)))
 }
 if (-not [string]::IsNullOrWhiteSpace($BuildData.Suffix) -and (Test-Path -Path $BuildData.Suffix)) {
-    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData.Suffix)))
+    $BuildData_Suffix_Path = (Resolve-Path -Path $BuildData.Suffix).Path
+    . ([ScriptBlock]::Create([System.IO.File]::ReadAllText($BuildData_Suffix_Path)))
 }
 $SearchRecursive = $true
 $SearchRootOnly = $false
