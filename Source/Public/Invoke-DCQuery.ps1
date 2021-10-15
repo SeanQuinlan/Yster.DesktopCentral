@@ -79,23 +79,61 @@ function Invoke-DCQuery {
                 'Authorization' = $AuthToken
             }
         }
-        $REST_Response = Invoke-RestMethod @API_Parameters
-        Write-Verbose ('{0}|Response status: {1}' -f $Function_Name, $REST_Response.status)
 
-        if ($REST_Response.status -eq 'error') {
-            $Terminating_ErrorRecord_Parameters = @{
-                'Exception'    = 'System.UnauthorizedAccessException'
-                'ID'           = 'DC-AuthenticationError-{0}' -f $REST_Response.error_code
-                'Category'     = 'AuthenticationError'
-                'TargetObject' = $API_Uri
-                'Message'      = $REST_Response.error_description
+        try {
+            $REST_Response = Invoke-RestMethod @API_Parameters
+            Write-Verbose ('{0}|Response status: {1}' -f $Function_Name, $REST_Response.status)
+
+            switch ($REST_Response.status) {
+                'error' {
+                    $Terminating_ErrorRecord_Parameters = @{
+                        'Exception'    = 'System.UnauthorizedAccessException'
+                        'ID'           = 'DC-AuthenticationError-{0}' -f $REST_Response.error_code
+                        'Category'     = 'AuthenticationError'
+                        'TargetObject' = $API_Uri
+                        'Message'      = $REST_Response.error_description
+                    }
+                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                }
+                'success' {
+                    $Message_Type = $REST_Response.message_type
+                    # Return the relevant message_response child object
+                    $REST_Response.message_response.$Message_Type | Add-CalculatedTime | ConvertTo-SortedPSObject
+                }
             }
-            $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-            $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-        } elseif ($REST_Response.status -eq 'success') {
-            $Message_Type = $REST_Response.message_type
-            # Return the relevant message_response child object
-            $REST_Response.message_response.$Message_Type | Add-CalculatedTime | ConvertTo-SortedPSObject
+        } catch [System.Net.WebException] {
+            if ($_.ErrorDetails.Message) {
+                $Returned_ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json
+            }
+
+            switch -Wildcard ($_.Exception.Message) {
+                'The remote server returned an error: (401) Unauthorized*' {
+                    $Terminating_ErrorRecord_Parameters = @{
+                        'Exception'    = 'System.Net.WebException'
+                        'ID'           = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
+                        'Category'     = 'SecurityError'
+                        'TargetObject' = $API_Uri
+                        'Message'      = $Returned_ErrorDetails.ErrorMsg
+                    }
+                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                }
+                'The remote name could not be resolved*' {
+                    $Terminating_ErrorRecord_Parameters = @{
+                        'Exception'    = 'System.Net.WebException'
+                        'ID'           = 'DC-NameResolutionFailure'
+                        'Category'     = 'ResourceUnavailable'
+                        'TargetObject' = $API_Uri
+                        'Message'      = $_
+                    }
+                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                }
+                default {
+                    throw $_
+                }
+            }
         }
 
     } catch {
