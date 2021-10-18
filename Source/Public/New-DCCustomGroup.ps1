@@ -3,12 +3,13 @@ function New-DCCustomGroup {
     .SYNOPSIS
         Creates a custom group.
     .DESCRIPTION
-
+        Creates a custom group of the supplied type and with the supplied ResourceIDs as group members.
     .EXAMPLE
-        New-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        New-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupName 'Test CG1' -GroupCategory 'Static' -GroupType 'Computer' -ResourceID 301
 
-        Creates the custom group...
+        Creates the custom group with the supplied parameters.
     .NOTES
+
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true)]
