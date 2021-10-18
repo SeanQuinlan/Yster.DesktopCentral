@@ -87,9 +87,9 @@ function Invoke-DCQuery {
             switch ($REST_Response.status) {
                 'error' {
                     $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.UnauthorizedAccessException'
-                        'ID'           = 'DC-AuthenticationError-{0}' -f $REST_Response.error_code
-                        'Category'     = 'AuthenticationError'
+                        'Exception'    = 'System.InvalidOperationException'
+                        'ID'           = 'DC-REST-Error-{0}' -f $REST_Response.error_code
+                        'Category'     = 'InvalidResult'
                         'TargetObject' = $API_Uri
                         'Message'      = $REST_Response.error_description
                     }
