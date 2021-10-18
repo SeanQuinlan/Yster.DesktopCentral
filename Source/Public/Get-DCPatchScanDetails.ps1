@@ -1,7 +1,7 @@
 function Get-DCPatchScanDetails {
     <#
     .SYNOPSIS
-        Gets the patch scan details of one or more devices.
+        Gets the patch scan details of one or all devices.
     .DESCRIPTION
         Outputs the patch scan details of all devices, or filtered by Resource ID, Custom Group, branch office, domain or other filters.
     .EXAMPLE

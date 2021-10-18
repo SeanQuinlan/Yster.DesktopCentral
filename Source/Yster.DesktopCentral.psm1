@@ -18,7 +18,7 @@ if (-not [string]::IsNullOrWhiteSpace($BuildData.Suffix) -and (Test-Path -Path $
 $SearchRecursive = $true
 $SearchRootOnly = $false
 $PublicScriptBlock = [ScriptBlock]::Create('{0}' -f (Get-ChildItem -Path $BuildData.PublicFilter -ErrorAction SilentlyContinue | Get-Content -Raw | Out-String))
-$PublicFunctions = $PublicScriptBlock.Ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst]}, $SearchRootOnly).Name
+$PublicFunctions = $PublicScriptBlock.Ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $SearchRootOnly).Name
 $PublicAlias = $PublicScriptBlock.Ast.FindAll({ $args[0] -is [System.Management.Automation.Language.ParamBlockAst] }, $SearchRecursive).Where{$_.TypeName.FullName -eq 'alias'}.PositionalArguments.Value
 
 $ExportParam = @{}

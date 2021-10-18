@@ -78,6 +78,9 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('Severity')) {
         $Filters.Add('severityfilter={0}' -f $Severity_Mapping[$BoundParameters['Severity']])
     }
+    if ($BoundParameters.ContainsKey('TaskName')) {
+        $Filters.Add('taskname={0}' -f $BoundParameters['TaskName'])
+    }
 
     if ($Filters.Count) {
         $BaseURL += '?{0}' -f ($Filters -join '&')
