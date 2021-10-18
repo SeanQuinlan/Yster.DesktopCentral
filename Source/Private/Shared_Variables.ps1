@@ -33,3 +33,14 @@ $LiveStatus_Mapping = @{
     'Down'    = 2
     'Unknown' = 3
 }
+
+$Group_Types_Mapping = @{
+    'Computer' = 1
+    'User'     = 2
+}
+
+$Group_Categories_Mapping = @{
+    'Static'       = 1
+    'Dynamic'      = 2
+    'StaticUnique' = 5
+}

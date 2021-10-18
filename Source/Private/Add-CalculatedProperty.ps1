@@ -1,13 +1,15 @@
-function Add-CalculatedTime {
+function Add-CalculatedProperty {
     <#
     .SYNOPSIS
-        Adds DateTime properties for all numeric time properties.
+        Adds certain calculated properties to make the output more useful.
     .DESCRIPTION
-        Looks for all numeric time properties and adds a corresponding property with a DateTime value.
+        Adds some additional properties to the output to reduce the amount of additional processing that needs to be done after getting the result.
+
+        For example: Looks for all numeric time properties and adds a corresponding property with a DateTime value.
 
         This is an internal function and not meant to be called directly.
     .EXAMPLE
-        $REST_Response.message_response.computers | Add-CalculatedTime
+        $REST_Response.message_response.computers | Add-CalculatedProperty
     .NOTES
 
     #>
@@ -64,6 +66,22 @@ function Add-CalculatedTime {
                 }
             }
         }
+
+        function Add-GroupProperty {
+            param(
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [Object]
+                $BaseObject
+            )
+
+            if ($BaseObject.'groupCategory') {
+                $BaseObject | Add-Member -MemberType 'NoteProperty' -Name 'groupCategoryName' -Value ($Group_Categories_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $BaseObject.'groupCategory' }).Name
+            }
+            if ($BaseObject.'groupType') {
+                $BaseObject | Add-Member -MemberType 'NoteProperty' -Name 'groupTypeName' -Value ($Group_Types_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $BaseObject.'groupType' }).Name
+            }
+        }
     }
 
     process {
@@ -72,6 +90,7 @@ function Add-CalculatedTime {
         }
 
         Add-TimeProperty -BaseObject $InputObject
+        Add-GroupProperty -BaseObject $InputObject
         $InputObject
     }
 }
