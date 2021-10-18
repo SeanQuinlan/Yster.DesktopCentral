@@ -60,7 +60,7 @@ function Invoke-DCQuery {
 
         # The REST Method to use.
         [Parameter(Mandatory = $true)]
-        [ValidateSet('GET', 'POST')]
+        [ValidateSet('GET', 'POST', 'PUT')]
         [String]
         $Method,
 

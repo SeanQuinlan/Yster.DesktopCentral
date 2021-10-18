@@ -56,7 +56,7 @@ function New-DCCustomGroup {
         [Int]
         $Port = 8020,
 
-        # The Resource ID or IDs of the computers to add to the group.
+        # The Resource ID or IDs of the objects to add to the group.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Int[]]
