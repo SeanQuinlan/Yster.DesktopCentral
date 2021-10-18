@@ -44,3 +44,9 @@ $Group_Categories_Mapping = @{
     'Dynamic'      = 2
     'StaticUnique' = 5
 }
+
+$OSPlatform_Mapping = @{
+    'Windows' = 1
+    'Mac'     = 2
+    'Linux'   = 3
+}
