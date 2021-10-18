@@ -40,6 +40,12 @@ function Invoke-DCQuery {
         [Hashtable]
         $Body,
 
+        # The Content-Type to send.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $ContentType = 'application/json',
+
         # Additional header to add.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -86,7 +92,7 @@ function Invoke-DCQuery {
         $global:API_Parameters = @{
             'Uri'         = $API_Uri
             'Method'      = $Method
-            'ContentType' = 'application/json'
+            'ContentType' = $ContentType
         }
         if ($PSBoundParameters.ContainsKey('Body')) {
             $API_Parameters['Body'] = $Body | ConvertTo-Json
@@ -160,7 +166,7 @@ function Invoke-DCQuery {
                 default {
                     $Terminating_ErrorRecord_Parameters = @{
                         'Exception'    = 'System.Net.WebException'
-                        'ID'           = 'DC-REST-Error-{0}' -f $REST_Response.error_code
+                        'ID'           = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
                         'Category'     = 'InvalidResult'
                         'TargetObject' = $API_Uri
                         'Message'      = $Returned_ErrorDetails.ErrorMsg
