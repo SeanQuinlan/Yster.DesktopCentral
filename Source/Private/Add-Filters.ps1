@@ -82,6 +82,17 @@ function Add-Filters {
         $Filters.Add('taskname={0}' -f $BoundParameters['TaskName'])
     }
 
+    # Custom group parameters.
+    if ($BoundParameters.ContainsKey('GroupType')) {
+        $Filters.Add('groupTypes={0}' -f $Group_Types_Mapping[$BoundParameters['GroupType']])
+    }
+    if ($BoundParameters.ContainsKey('GroupCategory')) {
+        $Filters.Add('groupCategories={0}' -f $Group_Categories_Mapping[$BoundParameters['GroupCategory']])
+    }
+    if ($BoundParameters.ContainsKey('GroupID')) {
+        $Filters.Add('cgResourceIds={0}' -f ($BoundParameters['GroupID'] -join ','))
+    }
+
     if ($Filters.Count) {
         $BaseURL += '?{0}' -f ($Filters -join '&')
     }
