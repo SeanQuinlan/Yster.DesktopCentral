@@ -8,38 +8,35 @@ function Get-DCAllPatches {
         With no filters, it will display all applicable patches. This can be filtered down to just installed or just missing patches.
         Or the patches can be filtered by ID, BulletinID, Approval Status or Severity.
     .EXAMPLE
-        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -Domain 'YSTER' -PatchStatus Missing
+        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
-        Displays just the missing patches for the YSTER domain.
+        Returns information on all patches supported by the server.
+    .EXAMPLE
+        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -Domain 'CONTOSO' -PatchStatus Missing
+
+        Displays just the missing patches for the CONTOSO domain.
+    .EXAMPLE
+        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500049
+
+        Returns just the information on the patch with ID 500049.
     .NOTES
         https://www.manageengine.com/patch-management/api/all-patches-patch-management.html
+        https://www.manageengine.com/patch-management/api/supported-patches-patch-management.html
     #>
 
     [CmdletBinding()]
     param(
+        # The Approval Status to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Approved', 'NotApproved', 'Declined')]
+        [String]
+        $ApprovalStatus,
+
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $AuthToken,
-
-        # The hostname of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $HostName,
-
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
-        # The NETBIOS name of the Domain to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Domain,
 
         # The Branch Office to filter on.
         [Parameter(Mandatory = $false)]
@@ -47,17 +44,29 @@ function Get-DCAllPatches {
         [String]
         $BranchOffice,
 
+        # The BulletinID to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $BulletinID,
+
         # The Custom Group to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]
         $CustomGroup,
 
-        # The Platform to filter on.
+        # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Mac', 'Windows', 'Linux')]
+        [ValidateNotNullOrEmpty()]
         [String]
-        $Platform,
+        $Domain,
+
+        # The hostname of the Desktop Central server.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $HostName,
 
         # The PatchID to filter on.
         [Parameter(Mandatory = $false)]
@@ -65,23 +74,23 @@ function Get-DCAllPatches {
         [Int]
         $PatchID,
 
-        # The BulletinID to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $BulletinID,
-
         # The Patch Status to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Installed', 'Missing')]
         [String]
         $PatchStatus,
 
-        # The Approval Status to filter on.
+        # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Approved', 'NotApproved')]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020,
+
+        # The Platform to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Mac', 'Windows', 'Linux')]
         [String]
-        $ApprovalStatus,
+        $Platform,
 
         # The Severity to filter on.
         [Parameter(Mandatory = $false)]
@@ -96,8 +105,8 @@ function Get-DCAllPatches {
     # testing
     # -------
     # [x] domain
-    # [ ] branch office
-    # [ ] custom group
+    # [x] branch office
+    # [x] custom group - not case-sensitive
     # [o] platform - no difference if I use "mac", still same results as "windows" or nothing. Doesn't matter what I put into platformfilter
     # [x] patchid
     # [x] bulletinid
