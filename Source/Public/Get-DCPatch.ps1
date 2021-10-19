@@ -1,4 +1,4 @@
-function Get-DCAllPatches {
+function Get-DCPatch {
     <#
     .SYNOPSIS
         Gets a list of all patches applicable to your environment.
@@ -6,17 +6,17 @@ function Get-DCAllPatches {
         Provides a list of all patches that are available in the Patch Management interface.
 
         With no filters, it will display all applicable patches. This can be filtered down to just installed or just missing patches.
-        Or the patches can be filtered by ID, BulletinID, Approval Status or Severity.
+        Or the patches can be filtered by ID, BulletinID, Approval Status and/or Severity.
     .EXAMPLE
-        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCPatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Returns information on all patches supported by the server.
     .EXAMPLE
-        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -Domain 'CONTOSO' -PatchStatus Missing
+        Get-DCPatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -Domain 'CONTOSO' -PatchStatus Missing
 
         Displays just the missing patches for the CONTOSO domain.
     .EXAMPLE
-        Get-DCAllPatches -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500049
+        Get-DCPatch -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500049
 
         Returns just the information on the patch with ID 500049.
     .NOTES
@@ -101,18 +101,6 @@ function Get-DCAllPatches {
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
-
-    # testing
-    # -------
-    # [x] domain
-    # [x] branch office
-    # [x] custom group - not case-sensitive
-    # [o] platform - no difference if I use "mac", still same results as "windows" or nothing. Doesn't matter what I put into platformfilter
-    # [x] patchid
-    # [x] bulletinid
-    # [x] patchstatus
-    # [x] approvalstatus
-    # [x] severity
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allpatches'
