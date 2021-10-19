@@ -1,4 +1,4 @@
-function Get-DCAvailableResource {
+function Get-DCResource {
     <#
     .SYNOPSIS
         Returns a list of resources (users or computers), filtered by certain parameters.
@@ -8,15 +8,15 @@ function Get-DCAvailableResource {
         For users, only name, domain and resource ID are returned.
         For computers, name, domain, resource ID and OS platform are returned.
     .EXAMPLE
-        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer
 
         Returns a list of all computer resources on the server.
     .EXAMPLE
-        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer -Domain 'CONTOSO' -Search 'SRV'
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer -Domain 'CONTOSO' -Search 'SRV'
 
         Returns a list of all computer resources in the CONTOSO domain with the characters "SRV" somewhere in the name.
     .EXAMPLE
-        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType user -Search 'admin'
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType user -Search 'admin'
 
         Returns a list of all user resources with the characters "admin" somewhere in the name.
     .NOTES
@@ -43,12 +43,6 @@ function Get-DCAvailableResource {
         [String]
         $GroupCategory = 'Static',
 
-        # The type of custom group to filter on - user or computer.
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Computer', 'User')]
-        [String]
-        $GroupType,
-
         # The hostname of the Desktop Central server.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -73,6 +67,13 @@ function Get-DCAvailableResource {
         [Int]
         $RangeIndex,
 
+        # The type of resource to return - user or computer.
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Computer', 'User')]
+        [Alias('GroupType')]
+        [String]
+        $ResourceType,
+
         # The string to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -90,19 +91,12 @@ function Get-DCAvailableResource {
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
-    # Tests:
-    # -------
-    # [x] domain
-    # [x] limit
-    # [o] rangeindex - doesn't seem to do anything if set to 0 or 1 (only 2 assets though). 2 returns just the 2nd one, 3+ returns nothing
-    # [o] sort order - doesn't seem to do anything
-
     try {
         $API_Path = 'dcapi/customGroups/availableResources'
         $API_Body = @{
             'charFilter'    = $Search
             'groupCategory' = $Group_Categories_Mapping[$GroupCategory]
-            'groupType'     = $Group_Types_Mapping[$GroupType]
+            'groupType'     = $Group_Types_Mapping[$ResourceType]
         }
         if ($PSBoundParameters.ContainsKey('Domain')) {
             $API_Body['domainFilter'] = $Domain
