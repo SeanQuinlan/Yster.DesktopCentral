@@ -1,4 +1,4 @@
-function Get-DCServerDiscover {
+function Get-DCServerOptions {
     <#
     .SYNOPSIS
         Gets some basic information about the Desktop Central Server.
@@ -7,9 +7,9 @@ function Get-DCServerDiscover {
 
         This information does not require authentication first, so can be used to determine how to connect to a server.
     .EXAMPLE
-        Get-DCServerDiscover -HostName DCSERVER
+        Get-DCServerOptions -HostName DCSERVER
 
-        Returns basic properties for the server.
+        Returns basic options for the server.
     .NOTES
         https://www.manageengine.com/patch-management/api/api-common-discover.html
     #>
