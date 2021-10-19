@@ -56,7 +56,7 @@ function Get-DCSupportedPatches {
 
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Mac', 'Windows')]
+        [ValidateSet('Mac', 'Windows', 'Linux')]
         [String]
         $Platform,
 

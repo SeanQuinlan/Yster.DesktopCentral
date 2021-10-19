@@ -56,7 +56,7 @@ function Get-DCAllSystems {
 
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Mac', 'Windows')]
+        [ValidateSet('Mac', 'Windows', 'Linux')]
         [String]
         $Platform,
 
@@ -81,7 +81,7 @@ function Get-DCAllSystems {
     # -------
     # [x] domain
     # [x] branch office
-    # [ ] custom group
+    # [x] custom group
     # [x] platform
     # [x] resourceid
     # [x] health
