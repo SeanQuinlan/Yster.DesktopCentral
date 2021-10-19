@@ -1,15 +1,15 @@
-function Get-DCSystemReport {
+function Get-DCPatchPerSystem {
     <#
     .SYNOPSIS
         Gets a list of all patches associated with a specific Resource ID.
     .DESCRIPTION
         Returns a list of all patches related to the supplied Resource ID. The patches can be further filtered by platform, severity, status, etc.
     .EXAMPLE
-        Get-DCSystemReport -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Get-DCPatchPerSystem -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
         Returns details of all patches related to resource 101.
     .EXAMPLE
-        Get-DCSystemReport -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101 -Severity Critical
+        Get-DCPatchPerSystem -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101 -Severity Critical
 
         Returns details of only critical patches related to resource 101.
     .NOTES
@@ -70,13 +70,6 @@ function Get-DCSystemReport {
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
-
-    # testing
-    # -------
-    # [x] platform
-    # [x] patchstatus
-    # [x] approvalstatus
-    # [x] severity
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/systemreport'
