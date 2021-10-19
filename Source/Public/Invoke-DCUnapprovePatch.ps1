@@ -26,17 +26,17 @@ function Invoke-DCUnapprovePatch {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The PatchID or IDs to unapprove.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Int[]]
-        $PatchID
+        $PatchID,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

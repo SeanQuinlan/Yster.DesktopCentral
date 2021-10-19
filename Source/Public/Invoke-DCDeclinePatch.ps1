@@ -26,17 +26,17 @@ function Invoke-DCDeclinePatch {
         [String]
         $HostName,
 
+        # The PatchID or IDs to decline.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Int[]]
+        $PatchID,
+
         # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int]
-        $Port = 8020,
-
-        # The PatchID or IDs to decline.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int[]]
-        $PatchID
+        $Port = 8020
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
