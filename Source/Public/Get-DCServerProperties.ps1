@@ -39,13 +39,11 @@ function Get-DCServerProperties {
     try {
         $API_Path = 'desktop/serverproperties'
         $Query_Parameters = @{
-            'HostName' = $HostName
-            'Port'     = $Port
-            'APIPath'  = $API_Path
-            'Method'   = 'GET'
-        }
-        if ($PSBoundParameters.ContainsKey('AuthToken')) {
-            $Query_Parameters['AuthToken'] = $AuthToken
+            'AuthToken' = $AuthToken
+            'HostName'  = $HostName
+            'Port'      = $Port
+            'APIPath'   = $API_Path
+            'Method'    = 'GET'
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
