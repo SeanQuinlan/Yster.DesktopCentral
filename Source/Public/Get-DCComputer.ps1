@@ -24,17 +24,11 @@ function Get-DCComputer {
         [String]
         $AuthToken,
 
-        # The hostname of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $HostName,
-
-        # The port of the Desktop Central server.
+        # The Branch Office to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
+        [String]
+        $BranchOffice,
 
         # The NETBIOS name of the Domain to filter on.
         [Parameter(Mandatory = $false)]
@@ -42,24 +36,30 @@ function Get-DCComputer {
         [String]
         $Domain,
 
-        # The Branch Office to filter on.
-        [Parameter(Mandatory = $false)]
+        # The hostname of the Desktop Central server.
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
-        $BranchOffice,
+        $HostName,
+
+        # The LiveStatus to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Live', 'Down', 'Unknown')]
+        [String]
+        $LiveStatus,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020,
 
         # The Resource ID to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
-        $ResourceID,
-
-        # The LiveStatus to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Live', 'Down', 'Unknown')]
-        [String]
-        $LiveStatus
+        $ResourceID
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

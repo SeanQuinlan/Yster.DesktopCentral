@@ -20,24 +20,6 @@ function Get-DCViewConfiguration {
         [String]
         $AuthToken,
 
-        # The hostname of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $HostName,
-
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
-        # The NETBIOS name of the Domain to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Domain,
-
         # The Branch Office to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -48,7 +30,25 @@ function Get-DCViewConfiguration {
         [Parameter(Mandatory = $false)]
         [ValidateSet('InProgress', 'Draft', 'Executed', 'Suspended', 'Deployed', 'RetryInProgress', 'Expired')]
         [String]
-        $ConfigStatus
+        $ConfigStatus,
+
+        # The NETBIOS name of the Domain to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $Domain,
+
+        # The hostname of the Desktop Central server.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $HostName,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

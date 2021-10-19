@@ -24,24 +24,6 @@ function Get-DCAllSystems {
         [String]
         $AuthToken,
 
-        # The hostname of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $HostName,
-
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
-        # The NETBIOS name of the Domain to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Domain,
-
         # The Branch Office to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -54,6 +36,30 @@ function Get-DCAllSystems {
         [String]
         $CustomGroup,
 
+        # The NETBIOS name of the Domain to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $Domain,
+
+        # The Health to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Unknown', 'Healthy', 'Vulnerable', 'HighlyVulnerable')]
+        [String]
+        $Health,
+
+        # The hostname of the Desktop Central server.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $HostName,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020,
+
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Mac', 'Windows', 'Linux')]
@@ -65,13 +71,7 @@ function Get-DCAllSystems {
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
-        $ResourceID,
-
-        # The Health to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Unknown', 'Healthy', 'Vulnerable', 'HighlyVulnerable')]
-        [String]
-        $Health
+        $ResourceID
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

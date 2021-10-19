@@ -1,11 +1,24 @@
 function Get-DCAvailableResource {
     <#
     .SYNOPSIS
-        Returns a list of resources, filtered by the supplied parameters
+        Returns a list of resources (users or computers), filtered by certain parameters.
     .DESCRIPTION
-    .EXAMPLE
-        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Returns a list of user or computer resources based on the filters or search criteria provided.
 
+        For users, only name, domain and resource ID are returned.
+        For computers, name, domain, resource ID and OS platform are returned.
+    .EXAMPLE
+        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer
+
+        Returns a list of all computer resources on the server.
+    .EXAMPLE
+        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer -Domain 'CONTOSO' -Search 'SRV'
+
+        Returns a list of all computer resources in the CONTOSO domain with the characters "SRV" somewhere in the name.
+    .EXAMPLE
+        Get-DCAvailableResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType user -Search 'admin'
+
+        Returns a list of all user resources with the characters "admin" somewhere in the name.
     .NOTES
 
     #>
@@ -17,13 +30,6 @@ function Get-DCAvailableResource {
         [ValidateNotNullOrEmpty()]
         [String]
         $AuthToken,
-
-        # The string to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Alias('CharFilter')]
-        [String]
-        $Search = '',
 
         # The NETBIOS name of the Domain or Domains to filter on.
         [Parameter(Mandatory = $false)]
@@ -67,6 +73,13 @@ function Get-DCAvailableResource {
         [Int]
         $RangeIndex,
 
+        # The string to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('CharFilter')]
+        [String]
+        $Search = '',
+
         # The sort order of the results.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Ascending', 'Descending')]
@@ -79,9 +92,9 @@ function Get-DCAvailableResource {
 
     # Tests:
     # -------
-    # [ ] domain
+    # [x] domain
     # [x] limit
-    # [o] rangeindex - doesn't seem to do anything if set to 0 or 1 (only 2 assets though). 2 returns just the 2nd one, 3 returns nothing
+    # [o] rangeindex - doesn't seem to do anything if set to 0 or 1 (only 2 assets though). 2 returns just the 2nd one, 3+ returns nothing
     # [o] sort order - doesn't seem to do anything
 
     try {

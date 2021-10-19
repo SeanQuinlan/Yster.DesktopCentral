@@ -18,6 +18,12 @@ function Get-DCSystemReport {
 
     [CmdletBinding()]
     param(
+        # The Approval Status to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Approved', 'NotApproved', 'Declined')]
+        [String]
+        $ApprovalStatus,
+
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -29,6 +35,18 @@ function Get-DCSystemReport {
         [ValidateNotNullOrEmpty()]
         [String]
         $HostName,
+
+        # The Patch Status to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Installed', 'Missing')]
+        [String]
+        $PatchStatus,
+
+        # The Platform to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Mac', 'Windows', 'Linux')]
+        [String]
+        $Platform,
 
         # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
@@ -42,24 +60,6 @@ function Get-DCSystemReport {
         [Alias('ID')]
         [Int]
         $ResourceID,
-
-        # The Platform to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Mac', 'Windows', 'Linux')]
-        [String]
-        $Platform,
-
-        # The Patch Status to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Installed', 'Missing')]
-        [String]
-        $PatchStatus,
-
-        # The Approval Status to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Approved', 'NotApproved', 'Declined')]
-        [String]
-        $ApprovalStatus,
 
         # The Severity to filter on.
         [Parameter(Mandatory = $false)]
@@ -75,7 +75,7 @@ function Get-DCSystemReport {
     # -------
     # [x] platform
     # [x] patchstatus
-    # [ ] approvalstatus
+    # [x] approvalstatus
     # [x] severity
 
     try {

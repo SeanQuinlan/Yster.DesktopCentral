@@ -12,6 +12,11 @@ function Get-DCAPIToken {
         Get-DCAPIToken -HostName DCSERVER -Credential 'DOMAIN\User'
 
         Connect as the AD user "DOMAIN\User" with no OTP. You will be prompted to enter the password for the user.
+    .EXAMPLE
+        $Creds = Get-Credential
+        Get-DCAPIToken -HostName DCSERVER -Credential $Creds -OTP 123456
+
+        Gets the user credentials first, then connects to the Desktop Central server with those credentials and the OTP from the app.
     .NOTES
         https://www.manageengine.com/products/desktop-central/api/index.html
     #>
@@ -40,17 +45,17 @@ function Get-DCAPIToken {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The OTP from the Authenticator app.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int]
-        $OTP
+        $OTP,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

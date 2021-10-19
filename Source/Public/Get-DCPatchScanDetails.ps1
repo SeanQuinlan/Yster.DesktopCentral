@@ -18,29 +18,17 @@ function Get-DCPatchScanDetails {
 
     [CmdletBinding()]
     param(
+        # The Agent Installation Status to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Installed', 'NotInstalled')]
+        [String]
+        $AgentInstallationStatus,
+
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $AuthToken,
-
-        # The hostname of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $HostName,
-
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
-        # The NETBIOS name of The NETBIOS name of the Domain to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Domain,
 
         # The Branch Office to filter on.
         [Parameter(Mandatory = $false)]
@@ -48,11 +36,41 @@ function Get-DCPatchScanDetails {
         [String]
         $BranchOffice,
 
-        # The Custom Group to filter on.
+        # The Custom Group name to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [String]
         $CustomGroup,
+
+        # The NETBIOS name of the Domain to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $Domain,
+
+        # The Health to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Unknown', 'Healthy', 'Vulnerable', 'HighlyVulnerable')]
+        [String]
+        $Health,
+
+        # The hostname of the Desktop Central server.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $HostName,
+
+        # The LiveStatus to filter on.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Live', 'Down', 'Unknown')]
+        [String]
+        $LiveStatus,
+
+        # The port of the Desktop Central server.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Port = 8020,
 
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
@@ -65,25 +83,7 @@ function Get-DCPatchScanDetails {
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
-        $ResourceID,
-
-        # The Health to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Unknown', 'Healthy', 'Vulnerable', 'HighlyVulnerable')]
-        [String]
-        $Health,
-
-        # The LiveStatus to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Live', 'Down', 'Unknown')]
-        [String]
-        $LiveStatus,
-
-        # The Agent Installation Status to filter on.
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Installed', 'NotInstalled')]
-        [String]
-        $AgentInstallationStatus
+        $ResourceID
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -92,8 +92,8 @@ function Get-DCPatchScanDetails {
     # testing
     # -------
     # [x] domain
-    # [ ] branch office
-    # [ ] custom group
+    # [x] branch office
+    # [o] custom group - does not work, function always returns nothing when I have custom group filter - tried case-sensitive + group id, always returns empty result
     # [x] platform
     # [x] resourceid
     # [x] health
