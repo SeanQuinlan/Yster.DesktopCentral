@@ -89,6 +89,11 @@ function Add-CalculatedProperty {
             $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'OSPlatformName' -Value ($OSPlatform_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'osPlatform' }).Name
         }
 
+        # Collection Properties
+        if ($InputObject.'collection_status') {
+            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'CollectionStatus' -Value ($Collection_Status_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'collection_status' }).Name
+        }
+
         # Return the modified object
         $InputObject
     }

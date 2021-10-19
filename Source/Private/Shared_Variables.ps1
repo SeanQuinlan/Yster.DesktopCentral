@@ -50,3 +50,9 @@ $OSPlatform_Mapping = @{
     'Mac'     = 2
     'Linux'   = 3
 }
+
+# For APD collections.
+$Collection_Status_Mapping = @{
+    'Active'    = 4
+    'Suspended' = 5
+}
