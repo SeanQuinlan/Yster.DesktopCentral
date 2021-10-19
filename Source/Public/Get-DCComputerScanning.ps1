@@ -1,15 +1,15 @@
-function Get-DCPatchScanDetails {
+function Get-DCComputerScanning {
     <#
     .SYNOPSIS
         Gets the patch scan details of one or all devices.
     .DESCRIPTION
-        Outputs the patch scan details of all devices, or filtered by Resource ID, Custom Group, branch office, domain or other filters.
+        Outputs the patch scan details of all devices, or filtered by resource ID, Custom Group, branch office, domain or other filters.
     .EXAMPLE
-        Get-DCPatchScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCComputerScanning -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Returns the patch scan status of every device.
     .EXAMPLE
-        Get-DCPatchScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Get-DCComputerScanning -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
         Returns just the patch scan status of the device with ID 101.
     .NOTES
@@ -88,17 +88,6 @@ function Get-DCPatchScanDetails {
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
-
-    # testing
-    # -------
-    # [x] domain
-    # [x] branch office
-    # [o] custom group - does not work, function always returns nothing when I have custom group filter - tried case-sensitive + group id, always returns empty result
-    # [x] platform
-    # [x] resourceid
-    # [x] health
-    # [x] livestatus
-    # [x] agent installation
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/scandetails'
