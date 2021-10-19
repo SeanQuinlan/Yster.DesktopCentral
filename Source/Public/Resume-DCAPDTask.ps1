@@ -3,9 +3,9 @@ function Resume-DCAPDTask {
     .SYNOPSIS
         Resumes an APD task.
     .DESCRIPTION
-        Resumes an APD task with the supplied name.
+        Resumes the APD task with the supplied name.
 
-        NOTE: API currently returns error "Problem has  occurred while resuming the task" but resumes the APD task successfully.
+        NOTE: The task name is case-sensitive.
     .EXAMPLE
         Resume-DCAPDTask -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -TaskName 'APDTask1'
 
@@ -35,6 +35,7 @@ function Resume-DCAPDTask {
         $Port = 8020,
 
         # The name of the APD Task to resume.
+        # NOTE: This value is case-sensitive.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
@@ -65,8 +66,21 @@ function Resume-DCAPDTask {
         $Confirm_Statement = $Whatif_Statement
         if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, $Confirm_Header.ToString())) {
             Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-            $Query_Return = Invoke-DCQuery @Query_Parameters
-            $Query_Return
+
+            # NOTE: As of v10.1.2127.12 of Desktop Central, the API returns error "Problem has  occurred while resuming the task" when resuming any task.
+            # But the APD task is actually resumed successfully. So we catch that error here and return a good status to make the user experience better.
+            try {
+                $Query_Return = Invoke-DCQuery @Query_Parameters
+                $Query_Return
+            } catch {
+                if ($_.Exception.Message -eq 'Problem has  occurred while resuming the task') {
+                    [pscustomobject]@{
+                        'status' = 'task has been resumed successfully'
+                    }
+                } else {
+                    throw $_
+                }
+            }
         }
 
     } catch {
