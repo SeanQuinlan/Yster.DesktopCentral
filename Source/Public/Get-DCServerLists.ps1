@@ -1,11 +1,11 @@
-function Get-DCServerProperties {
+function Get-DCServerLists {
     <#
     .SYNOPSIS
         Returns lists of branch offices, custom groups and domains on the server.
     .DESCRIPTION
         Gets the lists of branch offices, custom groups and domains and returns these.
     .EXAMPLE
-        Get-DCServerProperties -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCServerLists -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Returns the 3 lists for the server.
     .NOTES
