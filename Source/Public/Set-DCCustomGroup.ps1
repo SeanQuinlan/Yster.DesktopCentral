@@ -93,7 +93,8 @@ function Set-DCCustomGroup {
         [void]$Confirm_Header.AppendLine('Are you sure you want to perform this action?')
 
         $Remove_ShouldProcess = New-Object -TypeName 'System.Text.StringBuilder'
-        [void]$Remove_ShouldProcess.AppendLine(('Modify custom group with ID: {0}' -f $GroupID))
+        [void]$Remove_ShouldProcess.AppendLine(('Modify custom group with these parameters:'))
+        [void]$Remove_ShouldProcess.AppendLine(($API_Body | ConvertTo-Json))
 
         $Whatif_Statement = $Remove_ShouldProcess.ToString().Trim()
         $Confirm_Statement = $Whatif_Statement
