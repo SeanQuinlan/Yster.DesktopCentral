@@ -41,6 +41,31 @@ function Add-CalculatedProperty {
             $Time_In_Local_TimeZone = [System.TimeZoneInfo]::ConvertTimeFromUtc($Time_In_UTC, $TimeZone_Info)
             Get-Date -Date $Time_In_Local_TimeZone
         }
+
+        function Add-TimeProperty {
+            param(
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [Object]
+                $BaseObject
+            )
+
+            $Time_Property_Regex = '_on$|_time$'
+
+            $BaseObject_Properties = $BaseObject.PSObject.Properties
+            foreach ($BaseObject_PropertyName in $BaseObject_Properties.Name) {
+                if ($BaseObject.$BaseObject_PropertyName -is [PSCustomObject]) {
+                    Write-Verbose ('{0}|Recursing into same function' -f $Function_Name)
+                    Add-TimeProperty -BaseObject $BaseObject.$BaseObject_PropertyName
+                } elseif ($BaseObject_PropertyName -match $Time_Property_Regex) {
+                    Write-Verbose ('{0}|Adding Calculated Time property for: {1}' -f $Function_Name, $BaseObject_PropertyName)
+                    $Add_Property_Name = $BaseObject_PropertyName -split '_' | ForEach-Object {
+                        (Get-Culture).TextInfo.ToTitleCase($_)
+                    }
+                    $BaseObject | Add-Member -MemberType 'NoteProperty' -Name ($Add_Property_Name -join '') -Value (Get-DCTime -DCTime $BaseObject.$BaseObject_PropertyName)
+                }
+            }
+        }
     }
 
     process {
@@ -49,20 +74,7 @@ function Add-CalculatedProperty {
         }
 
         # Time Properties
-        $Time_Property_Regex = '_on$|_time$'
-        $InputObject_Properties = $InputObject.PSObject.Properties
-        foreach ($InputObject_PropertyName in $InputObject_Properties.Name) {
-            if ($InputObject.$InputObject_PropertyName -is [PSCustomObject]) {
-                Write-Verbose ('{0}|Recursing into same function' -f $Function_Name)
-                Add-TimeProperty -InputObject $InputObject.$InputObject_PropertyName
-            } elseif ($InputObject_PropertyName -match $Time_Property_Regex) {
-                Write-Verbose ('{0}|Adding Calculated Time property for: {1}' -f $Function_Name, $InputObject_PropertyName)
-                $Add_Property_Name = $InputObject_PropertyName -split '_' | ForEach-Object {
-                    (Get-Culture).TextInfo.ToTitleCase($_)
-                }
-                $InputObject | Add-Member -MemberType 'NoteProperty' -Name ($Add_Property_Name -join '') -Value (Get-DCTime -DCTime $InputObject.$InputObject_PropertyName)
-            }
-        }
+        Add-TimeProperty -BaseObject $InputObject
 
         # Group Properties
         if ($InputObject.'groupCategory') {
