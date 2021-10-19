@@ -1,11 +1,11 @@
-function Get-DCAPDTaskListDetails {
+function Get-DCAPDTask {
     <#
     .SYNOPSIS
         Returns a list of all APD tasks.
     .DESCRIPTION
         Displays a list of APD tasks and some details about each task.
     .EXAMPLE
-        Get-DCAPDTaskListDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCAPDTask -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Returns all the APD tasks.
     .NOTES
