@@ -1,16 +1,17 @@
-function Get-DCAllPatchDetails {
+function Get-DCPatchDetail {
     <#
     .SYNOPSIS
         Gets the details of every patch within the environment.
     .DESCRIPTION
         Provides a more detailed view of every patch, with a separate entry for each patch on each computer.
+
         Can be filtered down to a specific domain, patch ID, bulletin ID, severity or install status.
     .EXAMPLE
-        Get-DCAllPatchDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500107
+        Get-DCPatchDetail -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 500107
 
         Gets the status of the patch with the ID 500107, with a separate entry for every computer it applies to.
     .EXAMPLE
-        Get-DCAllPatchDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 31923 -PatchStatus Missing | Select-Object resource_name
+        Get-DCPatchDetail -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -PatchID 31923 -PatchStatus Missing | Select-Object resource_name
 
         Return the names of all computers that are missing the patch with ID 31923.
     .NOTES
@@ -89,17 +90,6 @@ function Get-DCAllPatchDetails {
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
-
-    # testing
-    # -------
-    # [x] domain
-    # [x] branch office
-    # [x] custom group - case sensitive
-    # [o] platform - no difference if I use "mac", still same results as "windows" or nothing. Doesn't matter what I put into platformfilter
-    # [x] patchid
-    # [x] bulletinid
-    # [x] patchstatus - works fine for this function
-    # [x] severity
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allpatchdetails'
