@@ -33,7 +33,7 @@ function Invoke-DCPatchScan {
         $Port = 8020,
 
         # The Resource ID or IDs to scan.
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int[]]
