@@ -3,11 +3,13 @@ function Get-DCCustomGroup {
     .SYNOPSIS
         Gets details of all custom groups or a filtered list of custom groups.
     .DESCRIPTION
+        Returns a list of custom groups and details for each of those groups.
 
+        With no filters it will return all groups on the server, or can be filtered by group ID (single or array of IDs), group category (Static, StaticUnique or Dynamic) or by group type (user or computer).
     .EXAMPLE
         Get-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
-        Returns all custom groups on the server
+        Returns all custom groups on the server.
     .EXAMPLE
         Get-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupID 601,301,304
 
@@ -28,9 +30,9 @@ function Get-DCCustomGroup {
         [String]
         $AuthToken,
 
-        # The category of custom group to filter on - Static or StaticUnique.
+        # The category of custom group to filter on - Static, StaticUnique or Dynamic.
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Static', 'StaticUnique')]
+        [ValidateSet('Static', 'StaticUnique', 'Dynamic')]
         [String]
         $GroupCategory,
 

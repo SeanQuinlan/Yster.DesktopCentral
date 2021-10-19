@@ -7,7 +7,7 @@ function Get-DCServerDiscover {
 
         This information does not require authentication first, so can be used to determine how to connect to a server.
     .EXAMPLE
-        Get-DCServerDiscover -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCServerDiscover -HostName DCSERVER
 
         Returns basic properties for the server.
     .NOTES

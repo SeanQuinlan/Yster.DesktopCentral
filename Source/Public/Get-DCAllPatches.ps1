@@ -110,8 +110,8 @@ function Get-DCAllPatches {
     # [o] platform - no difference if I use "mac", still same results as "windows" or nothing. Doesn't matter what I put into platformfilter
     # [x] patchid
     # [x] bulletinid
-    # [ ] patchstatus - needs more testing - for missing, I got 4 out of 13, for installed I got an error
-    # [ ] approvalstatus - needs more testing, got all 13 returned for approved, 0 for notapproved
+    # [x] patchstatus
+    # [x] approvalstatus
     # [x] severity
 
     try {

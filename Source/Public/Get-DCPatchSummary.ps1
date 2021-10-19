@@ -3,7 +3,12 @@ function Get-DCPatchSummary {
     .SYNOPSIS
         Gets some basic information about patching in the environment.
     .DESCRIPTION
-        Returns some summary information related to patching, such as a summary of vulnerable systems, a patch summary or a summary of patch scanning.
+        Returns some a small summary of information related to patching.
+
+        Examples are:
+        - A summary of patch scanning
+        - A summary of Automated Patch Deployment (APD)
+        - A summary of vulnerable systems
     .EXAMPLE
         Get-DCPatchSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 

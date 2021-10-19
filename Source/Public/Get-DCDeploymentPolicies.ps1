@@ -3,7 +3,7 @@ function Get-DCDeploymentPolicies {
     .SYNOPSIS
         Gets all deployment policies.
     .DESCRIPTION
-        Outputs all the deployment policies that have been configured.
+        Outputs all the deployment policies that have been configured on the server.
     .EXAMPLE
         Get-DCDeploymentPolicies -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
