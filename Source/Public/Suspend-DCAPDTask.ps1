@@ -4,6 +4,8 @@ function Suspend-DCAPDTask {
         Suspends an APD task.
     .DESCRIPTION
         Suspends an APD task with the supplied name.
+
+        NOTE: The task name is case-sensitive.
     .EXAMPLE
         Suspend-DCAPDTask -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -TaskName 'APDTask1'
 
@@ -33,6 +35,7 @@ function Suspend-DCAPDTask {
         $Port = 8020,
 
         # The name of the APD Task to suspend.
+        # NOTE: This value is case-sensitive.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
