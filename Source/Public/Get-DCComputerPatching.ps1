@@ -1,15 +1,15 @@
-function Get-DCAllSystems {
+function Get-DCComputerPatching {
     <#
     .SYNOPSIS
         Gets the list of computers and their patch status.
     .DESCRIPTION
-        Provides a more detailed view of every computer's patch status.
+        Provides a more detailed output of computer details and those related to patching - last patch time, last scan time, etc
     .EXAMPLE
-        Get-DCAllSystems -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCComputerPatching -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Gets the patch status of all computers.
     .EXAMPLE
-        Get-DCAllSystems -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 308
+        Get-DCComputerPatching -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 308
 
         Return the patch status of the computer with ID 308.
     .NOTES
@@ -76,15 +76,6 @@ function Get-DCAllSystems {
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
-
-    # testing
-    # -------
-    # [x] domain
-    # [x] branch office
-    # [x] custom group
-    # [x] platform
-    # [x] resourceid
-    # [x] health
 
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allsystems'
