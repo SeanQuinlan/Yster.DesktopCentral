@@ -8,15 +8,15 @@ function Get-DCResource {
         For users, only name, domain and resource ID are returned.
         For computers, name, domain, resource ID and OS platform are returned.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer
 
         Returns a list of all computer resources on the server.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType computer -Domain 'CONTOSO' -Search 'SRV'
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer -Domain 'CONTOSO' -Search 'SRV'
 
         Returns a list of all computer resources in the CONTOSO domain with the characters "SRV" somewhere in the name.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType user -Search 'admin'
+        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType user -Search 'admin'
 
         Returns a list of all user resources with the characters "admin" somewhere in the name.
     .NOTES
@@ -50,10 +50,12 @@ function Get-DCResource {
         $HostName,
 
         # Limit the number of results that are returned.
-        [Parameter(Mandatory = $true)]
+        # The default is to return all results.
+        [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
+        [Alias('Limit')]
         [Int]
-        $Limit,
+        $ResultSize = 0,
 
         # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
@@ -62,10 +64,10 @@ function Get-DCResource {
         $Port = 8020,
 
         # The range index to filter on.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int]
-        $RangeIndex,
+        $RangeIndex = 0,
 
         # The type of resource to return - user or computer.
         [Parameter(Mandatory = $true)]
@@ -97,15 +99,12 @@ function Get-DCResource {
             'charFilter'    = $Search
             'groupCategory' = $Group_Categories_Mapping[$GroupCategory]
             'groupType'     = $Group_Types_Mapping[$ResourceType]
+            'limit'         = $ResultSize
+            # This can be used to get another "page" of results by setting the index to limit+1
+            'rangeIndex'    = $RangeIndex
         }
         if ($PSBoundParameters.ContainsKey('Domain')) {
             $API_Body['domainFilter'] = $Domain
-        }
-        if ($PSBoundParameters.ContainsKey('Limit')) {
-            $API_Body['limit'] = $Limit
-        }
-        if ($PSBoundParameters.ContainsKey('RangeIndex')) {
-            $API_Body['rangeIndex'] = $RangeIndex
         }
         if ($PSBoundParameters.ContainsKey('SortOrder')) {
             if ($SortOrder -eq 'Ascdending') {
