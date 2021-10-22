@@ -10,6 +10,8 @@ function Get-DCAPDTask {
         Returns all the APD tasks.
     .NOTES
         https://www.manageengine.com/patch-management/api/list-apd-task.html
+
+        Returns no results if ResultSize is set to 0, so set it a very high number instead.
     #>
 
     [CmdletBinding()]
@@ -26,18 +28,33 @@ function Get-DCAPDTask {
         [String]
         $HostName,
 
+        # The page of results to return.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Page,
+
         # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int]
-        $Port = 8020
+        $Port = 8020,
+
+        # Limit the number of results that are returned.
+        # The default is to return all results.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Limit', 'PageLimit')]
+        [Int]
+        $ResultSize = 1000000
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = 'patch/apdTaskListdetails'
+        $PSBoundParameters['ResultSize'] = $ResultSize
+        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/apdTaskListdetails'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName

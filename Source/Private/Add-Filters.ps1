@@ -54,11 +54,23 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('Domain')) {
         $Filters.Add('domainfilter={0}' -f $BoundParameters['Domain'])
     }
+    if ($BoundParameters.ContainsKey('GroupCategory')) {
+        $Filters.Add('groupCategories={0}' -f $Group_Categories_Mapping[$BoundParameters['GroupCategory']])
+    }
+    if ($BoundParameters.ContainsKey('GroupID')) {
+        $Filters.Add('cgResourceIds={0}' -f ($BoundParameters['GroupID'] -join ','))
+    }
+    if ($BoundParameters.ContainsKey('GroupType')) {
+        $Filters.Add('groupTypes={0}' -f $Group_Types_Mapping[$BoundParameters['GroupType']])
+    }
     if ($BoundParameters.ContainsKey('Health')) {
         $Filters.Add('healthfilter={0}' -f $Health_Mapping[$BoundParameters['Health']])
     }
     if ($BoundParameters.ContainsKey('LiveStatus')) {
         $Filters.Add('livestatusfilter={0}' -f $LiveStatus_Mapping[$BoundParameters['LiveStatus']])
+    }
+    if ($BoundParameters.ContainsKey('Page')) {
+        $Filters.Add('page={0}' -f $BoundParameters['Page'])
     }
     if ($BoundParameters.ContainsKey('PatchID')) {
         $Filters.Add('patchid={0}' -f $BoundParameters['PatchID'])
@@ -75,22 +87,14 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('ResourceIDFilter')) {
         $Filters.Add('residfilter={0}' -f $BoundParameters['ResourceIDFilter'])
     }
+    if ($BoundParameters.ContainsKey('ResultSize')) {
+        $Filters.Add('pagelimit={0}' -f $BoundParameters['ResultSize'])
+    }
     if ($BoundParameters.ContainsKey('Severity')) {
         $Filters.Add('severityfilter={0}' -f $Severity_Mapping[$BoundParameters['Severity']])
     }
     if ($BoundParameters.ContainsKey('TaskName')) {
         $Filters.Add('taskname={0}' -f $BoundParameters['TaskName'])
-    }
-
-    # Custom group parameters.
-    if ($BoundParameters.ContainsKey('GroupType')) {
-        $Filters.Add('groupTypes={0}' -f $Group_Types_Mapping[$BoundParameters['GroupType']])
-    }
-    if ($BoundParameters.ContainsKey('GroupCategory')) {
-        $Filters.Add('groupCategories={0}' -f $Group_Categories_Mapping[$BoundParameters['GroupCategory']])
-    }
-    if ($BoundParameters.ContainsKey('GroupID')) {
-        $Filters.Add('cgResourceIds={0}' -f ($BoundParameters['GroupID'] -join ','))
     }
 
     if ($Filters.Count) {

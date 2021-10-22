@@ -68,6 +68,12 @@ function Get-DCPatch {
         [String]
         $HostName,
 
+        # The page of results to return.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Page,
+
         # The PatchID to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -92,6 +98,14 @@ function Get-DCPatch {
         [String]
         $Platform,
 
+        # Limit the number of results that are returned.
+        # The default is to return all results.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Limit', 'PageLimit')]
+        [Int]
+        $ResultSize = 0,
+
         # The Severity to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Unrated', 'Low', 'Moderate', 'Important', 'Critical')]
@@ -103,6 +117,7 @@ function Get-DCPatch {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
+        $PSBoundParameters['ResultSize'] = $ResultSize
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/allpatches'
         $Query_Parameters = @{
             'AuthToken' = $AuthToken

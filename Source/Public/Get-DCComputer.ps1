@@ -48,6 +48,12 @@ function Get-DCComputer {
         [String]
         $LiveStatus,
 
+        # The page of results to return.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $Page,
+
         # The port of the Desktop Central server.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -59,13 +65,22 @@ function Get-DCComputer {
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
-        $ResourceID
+        $ResourceID,
+
+        # Limit the number of results that are returned.
+        # The default is to return all results.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Limit', 'PageLimit')]
+        [Int]
+        $ResultSize = 0
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
+        $PSBoundParameters['ResultSize'] = $ResultSize
         if ($PSBoundParameters.ContainsKey('ResourceID')) {
             [void]$PSBoundParameters.Remove('ResourceID')
             [void]$PSBoundParameters.Add('ResourceIDFilter', $ResourceID)

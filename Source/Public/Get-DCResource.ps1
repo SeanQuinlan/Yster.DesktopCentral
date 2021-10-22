@@ -53,7 +53,7 @@ function Get-DCResource {
         # The default is to return all results.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Limit')]
+        [Alias('Limit', 'PageLimit')]
         [Int]
         $ResultSize = 0,
 
