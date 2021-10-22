@@ -18,7 +18,7 @@ function Get-DCPatchDetail {
         https://www.manageengine.com/patch-management/api/all-patch-details-patch-management.html
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -102,6 +102,20 @@ function Get-DCPatchDetail {
         [Alias('Limit', 'PageLimit')]
         [Int]
         $ResultSize = 0,
+
+        # The name of the field to search on.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchField,
+
+        # The value to search on, in the specified field.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchValue,
 
         # The Severity to filter on.
         [Parameter(Mandatory = $false)]

@@ -14,7 +14,7 @@ function Get-DCAPDTask {
         Returns no results if ResultSize is set to 0, so set it a very high number instead.
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -54,7 +54,21 @@ function Get-DCAPDTask {
         [ValidateNotNullOrEmpty()]
         [Alias('Limit', 'PageLimit')]
         [Int]
-        $ResultSize = 1000000
+        $ResultSize = 1000000,
+
+        # The name of the field to search on.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchField,
+
+        # The value to search on, in the specified field.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchValue
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

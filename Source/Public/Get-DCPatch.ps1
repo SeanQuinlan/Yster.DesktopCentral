@@ -24,7 +24,7 @@ function Get-DCPatch {
         https://www.manageengine.com/patch-management/api/supported-patches-patch-management.html
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
         # The Approval Status to filter on.
         [Parameter(Mandatory = $false)]
@@ -113,6 +113,20 @@ function Get-DCPatch {
         [Alias('Limit', 'PageLimit')]
         [Int]
         $ResultSize = 0,
+
+        # The name of the field to search on.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchField,
+
+        # The value to search on, in the specified field.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchValue,
 
         # The Severity to filter on.
         [Parameter(Mandatory = $false)]

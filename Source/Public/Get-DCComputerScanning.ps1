@@ -16,7 +16,7 @@ function Get-DCComputerScanning {
         https://www.manageengine.com/patch-management/api/patch-scan-details-patch-management.html
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
         # The Agent Installation Status to filter on.
         [Parameter(Mandatory = $false)]
@@ -105,7 +105,21 @@ function Get-DCComputerScanning {
         [ValidateNotNullOrEmpty()]
         [Alias('Limit', 'PageLimit')]
         [Int]
-        $ResultSize = 0
+        $ResultSize = 0,
+
+        # The name of the field to search on.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchField,
+
+        # The value to search on, in the specified field.
+        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SearchValue
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name

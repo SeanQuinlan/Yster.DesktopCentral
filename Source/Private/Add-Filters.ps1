@@ -90,6 +90,13 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('ResultSize')) {
         $Filters.Add('pagelimit={0}' -f $BoundParameters['ResultSize'])
     }
+    if ($BoundParameters.ContainsKey('SearchField')) {
+        $Filters.Add('searchtype={0}' -f $BoundParameters['SearchField'])
+        $Filters.Add('searchcolumn={0}' -f $BoundParameters['SearchField'])
+    }
+    if ($BoundParameters.ContainsKey('SearchValue')) {
+        $Filters.Add('searchvalue={0}' -f $BoundParameters['SearchValue'])
+    }
     if ($BoundParameters.ContainsKey('Severity')) {
         $Filters.Add('severityfilter={0}' -f $Severity_Mapping[$BoundParameters['Severity']])
     }
