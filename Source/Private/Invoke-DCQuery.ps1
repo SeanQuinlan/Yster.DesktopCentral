@@ -80,15 +80,14 @@ function Invoke-DCQuery {
         }
     }
 
-    if ($APIPath -match '^dcapi') {
-        $API_Uri = 'http://{0}:{1}/{2}' -f $HostName, $Port, $APIPath
-        $NewAPI = $true
-    } else {
-        $API_Version = '1.3'
-        $API_Uri = 'http://{0}:{1}/api/{2}/{3}' -f $HostName, $Port, $API_Version, $APIPath
-    }
-
     try {
+        if ($APIPath -match '^dcapi') {
+            $API_Uri = 'http://{0}:{1}/{2}' -f $HostName, $Port, $APIPath
+            $NewAPI = $true
+        } else {
+            $API_Uri = 'http://{0}:{1}/api/1.3/{2}' -f $HostName, $Port, $APIPath
+        }
+
         $global:API_Parameters = @{
             'Uri'         = $API_Uri
             'Method'      = $Method
