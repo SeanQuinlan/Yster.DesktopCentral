@@ -38,7 +38,14 @@ function Get-DCConfiguration {
         [String]
         $Domain,
 
-        # The hostname of the Desktop Central server.
+        # The hostname/FQDN/IP address of the Desktop Central server.
+        # By default, HTTPS will be used for connection.
+        # If you want to connect via HTTP, then prefix the hostname with "http://"
+        #
+        # Examples of use:
+        # -HostName deskcent01
+        # -HostName http://deskcent01
+        # -HostName deskcent01.contoso.com
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
@@ -51,6 +58,7 @@ function Get-DCConfiguration {
         $Page,
 
         # The port of the Desktop Central server.
+        # Only set this if the server is running on a different port to the default.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Int]

@@ -52,7 +52,7 @@ function Invoke-DCQuery {
         [Hashtable]
         $Header,
 
-        # The hostname of the Desktop Central server.
+        # The hostname/FQDN/IP address of the Desktop Central server.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
@@ -81,11 +81,14 @@ function Invoke-DCQuery {
     }
 
     try {
+        if ($HostName -notmatch '^https?\:\/\/') {
+            $HostName = 'https://{0}' -f $HostName
+        }
         if ($APIPath -match '^dcapi') {
-            $API_Uri = 'http://{0}:{1}/{2}' -f $HostName, $Port, $APIPath
+            $API_Uri = '{0}:{1}/{2}' -f $HostName, $Port, $APIPath
             $NewAPI = $true
         } else {
-            $API_Uri = 'http://{0}:{1}/api/1.3/{2}' -f $HostName, $Port, $APIPath
+            $API_Uri = '{0}:{1}/api/1.3/{2}' -f $HostName, $Port, $APIPath
         }
 
         $global:API_Parameters = @{
@@ -137,42 +140,51 @@ function Invoke-DCQuery {
         } catch [System.Net.WebException] {
             if ($_.ErrorDetails.Message) {
                 $Returned_ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json
-            }
-
-            switch -Wildcard ($_.Exception.Message) {
-                'The remote server returned an error: (401) Unauthorized*' {
-                    $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.Net.WebException'
-                        'ID'           = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
-                        'Category'     = 'SecurityError'
-                        'TargetObject' = $API_Uri
-                        'Message'      = $Returned_ErrorDetails.ErrorMsg
+                switch -Wildcard ($_.Exception.Message) {
+                    'The remote server returned an error: (401) Unauthorized*' {
+                        $Terminating_ErrorRecord_Parameters = @{
+                            'Exception'    = 'System.Net.WebException'
+                            'ID'           = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
+                            'Category'     = 'SecurityError'
+                            'TargetObject' = $API_Uri
+                            'Message'      = $Returned_ErrorDetails.ErrorMsg
+                        }
+                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
-                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-                }
-                'The remote name could not be resolved*' {
-                    $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.Net.WebException'
-                        'ID'           = 'DC-NameResolutionFailure'
-                        'Category'     = 'ResourceUnavailable'
-                        'TargetObject' = $API_Uri
-                        'Message'      = $_
+                    'The remote name could not be resolved*' {
+                        $Terminating_ErrorRecord_Parameters = @{
+                            'Exception'    = 'System.Net.WebException'
+                            'ID'           = 'DC-NameResolutionFailure'
+                            'Category'     = 'ResourceUnavailable'
+                            'TargetObject' = $API_Uri
+                            'Message'      = $_
+                        }
+                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
-                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-                }
-                default {
-                    $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.Net.WebException'
-                        'ID'           = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
-                        'Category'     = 'InvalidResult'
-                        'TargetObject' = $API_Uri
-                        'Message'      = $Returned_ErrorDetails.ErrorMsg
+                    default {
+                        $Terminating_ErrorRecord_Parameters = @{
+                            'Exception'    = 'System.Net.WebException'
+                            'ID'           = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
+                            'Category'     = 'InvalidResult'
+                            'TargetObject' = $API_Uri
+                            'Message'      = $Returned_ErrorDetails.ErrorMsg
+                        }
+                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
-                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                 }
+            } else {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Net.WebException'
+                    'ID'           = 'DC-ConnectionError'
+                    'Category'     = 'InvalidResult'
+                    'TargetObject' = $API_Uri
+                    'Message'      = $_.Exception.Message
+                }
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
             }
         }
 
