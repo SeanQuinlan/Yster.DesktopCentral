@@ -62,12 +62,11 @@ function Get-DCCustomGroup {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
+        # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -86,12 +85,12 @@ function Get-DCCustomGroup {
             }
         }
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'GET'
-            'Header'    = $API_Header
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'GET'
+            'SkipCertificateCheck' = $SkipCertificateCheck
+            'Header'               = $API_Header
         }
 
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)

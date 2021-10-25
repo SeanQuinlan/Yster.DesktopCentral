@@ -33,19 +33,18 @@ function Uninstall-DCAgent {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The Resource ID or IDs of the computers to uninstall the agent from.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int[]]
-        $ResourceID
+        $ResourceID,
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -57,12 +56,12 @@ function Uninstall-DCAgent {
             'resourceids' = $ResourceID
         }
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'POST'
-            'Body'      = $Body
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
+            'Body'                 = $Body
         }
 
         $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'

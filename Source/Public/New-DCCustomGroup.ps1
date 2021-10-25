@@ -57,18 +57,17 @@ function New-DCCustomGroup {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The Resource ID or IDs of the objects to add to the group.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Int[]]
-        $ResourceID
+        $ResourceID,
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -89,14 +88,14 @@ function New-DCCustomGroup {
             'Accept' = 'application/customGroupAdded.v1+json'
         }
         $Query_Parameters = @{
-            'AuthToken'   = $AuthToken
-            'HostName'    = $HostName
-            'Port'        = $Port
-            'APIPath'     = $API_Path
-            'Method'      = 'POST'
-            'Body'        = $API_Body
-            'Header'      = $API_Header
-            'ContentType' = 'application/customGroupDetail.v1+json'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
+            'Body'                 = $API_Body
+            'Header'               = $API_Header
+            'ContentType'          = 'application/customGroupDetail.v1+json'
         }
 
         $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'

@@ -58,12 +58,11 @@ function Get-DCAPIToken {
         [Int]
         $OTP,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
+        # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -90,10 +89,10 @@ function Get-DCAPIToken {
         $API_Path += '?{0}' -f ($Auth_Options -join '&')
 
         $Query_Parameters = @{
-            'HostName' = $HostName
-            'Port'     = $Port
-            'APIPath'  = $API_Path
-            'Method'   = 'POST'
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
@@ -130,7 +129,6 @@ function Get-DCAPIToken {
                 }
                 $OTP_Query_Parameters = @{
                     'HostName' = $HostName
-                    'Port'     = $Port
                     'APIPath'  = $OTP_Query_URL
                     'Method'   = 'POST'
                     'Body'     = $OTP_Query_Body

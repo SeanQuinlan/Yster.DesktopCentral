@@ -10,7 +10,6 @@ function Invoke-DCQuery {
         $Query_Parameters = @{
             'AuthToken' = $AuthToken
             'HostName'  = $HostName
-            'Port'      = $Port
             'APIPath'   = 'som/computers/installagent'
             'Method'    = 'POST'
             'Body'      = @{
@@ -64,11 +63,11 @@ function Invoke-DCQuery {
         [String]
         $Method,
 
-        # The port of the Desktop Central server.
-        [Parameter(Mandatory = $true)]
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -83,6 +82,11 @@ function Invoke-DCQuery {
     try {
         if ($HostName -notmatch '^https?\:\/\/') {
             $HostName = 'https://{0}' -f $HostName
+        }
+        if ($HostName -match 'https\:\/\/') {
+            $Port = 8383
+        } else {
+            $Port = 8020
         }
         if ($APIPath -match '^dcapi') {
             $API_Uri = '{0}:{1}/{2}' -f $HostName, $Port, $APIPath
@@ -109,7 +113,15 @@ function Invoke-DCQuery {
         }
 
         try {
+            if ($SkipCertificateCheck) {
+                Write-Verbose ('{0}|Disabling SSL check' -f $Function_Name)
+                $SavedCertificatePolicy = [System.Net.ServicePointManager]::CertificatePolicy
+                [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+            }
             $global:REST_Response = Invoke-RestMethod @API_Parameters
+            if ($SavedCertificatePolicy) {
+                [System.Net.ServicePointManager]::CertificatePolicy = $SavedCertificatePolicy
+            }
 
             if ($NewAPI) {
                 # The new API (host:port/dcapi) returns the objects directly, rather than as a sub-property

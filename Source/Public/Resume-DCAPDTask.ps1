@@ -35,12 +35,11 @@ function Resume-DCAPDTask {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
+        # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
+        [Switch]
+        $SkipCertificateCheck,
 
         # The name of the APD Task to resume.
         # NOTE: This value is case-sensitive.
@@ -56,11 +55,11 @@ function Resume-DCAPDTask {
     try {
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/resumeAPDTask'
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'POST'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
 
         $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'

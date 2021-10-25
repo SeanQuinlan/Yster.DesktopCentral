@@ -64,13 +64,6 @@ function Get-DCResource {
         [Int]
         $ResultSize = 0,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The range index to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -90,6 +83,12 @@ function Get-DCResource {
         [Alias('CharFilter')]
         [String]
         $Search = '',
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck,
 
         # The sort order of the results.
         [Parameter(Mandatory = $false)]
@@ -126,14 +125,14 @@ function Get-DCResource {
             'Accept' = 'application/availableResources.v1+json'
         }
         $Query_Parameters = @{
-            'AuthToken'   = $AuthToken
-            'HostName'    = $HostName
-            'Port'        = $Port
-            'APIPath'     = $API_Path
-            'Method'      = 'POST'
-            'Body'        = $API_Body
-            'Header'      = $API_Header
-            'ContentType' = 'application/availableResourcesDetail.v1+json'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
+            'Body'                 = $API_Body
+            'Header'               = $API_Header
+            'ContentType'          = 'application/availableResourcesDetail.v1+json'
         }
 
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)

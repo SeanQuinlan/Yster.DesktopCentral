@@ -38,12 +38,11 @@ function Get-DCPatchSummary {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
+        # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -52,11 +51,11 @@ function Get-DCPatchSummary {
     try {
         $API_Path = 'patch/summary'
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'GET'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'GET'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters

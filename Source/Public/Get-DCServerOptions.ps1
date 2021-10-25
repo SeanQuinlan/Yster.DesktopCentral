@@ -35,12 +35,11 @@ function Get-DCServerOptions {
         [String]
         $HostName,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
+        # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -49,10 +48,10 @@ function Get-DCServerOptions {
     try {
         $API_Path = 'desktop/discover'
         $Query_Parameters = @{
-            'HostName' = $HostName
-            'Port'     = $Port
-            'APIPath'  = $API_Path
-            'Method'   = 'GET'
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'GET'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
         if ($PSBoundParameters.ContainsKey('AuthToken')) {
             $Query_Parameters['AuthToken'] = $AuthToken

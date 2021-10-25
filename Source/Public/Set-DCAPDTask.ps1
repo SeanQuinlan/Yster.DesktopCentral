@@ -153,13 +153,6 @@ function Set-DCAPDTask {
         [String]
         $Platform,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # Install Rollups.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -180,6 +173,12 @@ function Set-DCAPDTask {
         [Alias('ServicePackUpdate')]
         [Boolean]
         $ServicePackUpdates,
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck,
 
         # Attach a detailed report on deployment status.
         [Parameter(Mandatory = $false)]
@@ -261,12 +260,12 @@ function Set-DCAPDTask {
         $Body = Get-APDBody -Type 'Set' -BoundParameters $PSBoundParameters
 
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'POST'
-            'Body'      = $Body
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'POST'
+            'SkipCertificateCheck' = $SkipCertificateCheck
+            'Body'                 = $Body
         }
 
         $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'

@@ -79,13 +79,6 @@ function Get-DCComputerScanning {
         [Int]
         $Page,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Mac', 'Windows', 'Linux')]
@@ -119,7 +112,13 @@ function Get-DCComputerScanning {
         [Parameter(Mandatory = $true, ParameterSetName = 'Search')]
         [ValidateNotNullOrEmpty()]
         [String]
-        $SearchValue
+        $SearchValue,
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -129,11 +128,11 @@ function Get-DCComputerScanning {
         $PSBoundParameters['ResultSize'] = $ResultSize
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/scandetails'
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'GET'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'GET'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters

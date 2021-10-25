@@ -56,3 +56,17 @@ $Collection_Status_Mapping = @{
     'Active'    = 4
     'Suspended' = 5
 }
+
+# From: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error/55246366
+$TrustAllCertsPolicy = @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+Add-Type -TypeDefinition $TrustAllCertsPolicy

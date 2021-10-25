@@ -61,13 +61,6 @@ function Get-DCPatchPerSystem {
         [String]
         $Platform,
 
-        # The port of the Desktop Central server.
-        # Only set this if the server is running on a different port to the default.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Port = 8020,
-
         # The Resource ID to filter on.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -101,7 +94,13 @@ function Get-DCPatchPerSystem {
         [Parameter(Mandatory = $false)]
         [ValidateSet('Unrated', 'Low', 'Moderate', 'Important', 'Critical')]
         [String]
-        $Severity
+        $Severity,
+
+        # Whether to skip the SSL certificate check.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Switch]
+        $SkipCertificateCheck
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -111,11 +110,11 @@ function Get-DCPatchPerSystem {
         $PSBoundParameters['ResultSize'] = $ResultSize
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/systemreport'
         $Query_Parameters = @{
-            'AuthToken' = $AuthToken
-            'HostName'  = $HostName
-            'Port'      = $Port
-            'APIPath'   = $API_Path
-            'Method'    = 'GET'
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'APIPath'              = $API_Path
+            'Method'               = 'GET'
+            'SkipCertificateCheck' = $SkipCertificateCheck
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
