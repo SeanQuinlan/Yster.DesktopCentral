@@ -84,7 +84,7 @@ function Add-CalculatedProperty {
             'groupCategory'       = 'GroupCategoryName'
             'groupType'           = 'GroupTypeName'
             'installation_status' = 'InstallStatus'
-            'is_usage_prohibited' = 'IsUsageProhibited'
+            'is_usage_prohibited' = 'AccessType'
             'osPlatform'          = 'OSPlatformName'
             'sw_type'             = 'LicenseType'
         }

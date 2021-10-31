@@ -86,12 +86,6 @@ $LicenseType_Mapping = @{
     'NonCommercial' = 2
 }
 
-$IsUsageProhibited_Mapping = @{
-    'NotAssigned' = 0
-    'Allowed'     = 1
-    'Prohibited'  = 2
-}
-
 # For APD collections.
 $CollectionStatus_Mapping = @{
     'Active'    = 4
