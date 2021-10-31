@@ -49,21 +49,47 @@ $ScanStatus_Mapping = @{
     'Success'    = 2
 }
 
-$GroupTypes_Mapping = @{
+$GroupTypeName_Mapping = @{
     'Computer' = 1
     'User'     = 2
 }
 
-$GroupCategories_Mapping = @{
+$GroupCategoryName_Mapping = @{
     'Static'       = 1
     'Dynamic'      = 2
     'StaticUnique' = 5
 }
 
-$OSPlatform_Mapping = @{
+$OSPlatformName_Mapping = @{
     'Windows' = 1
     'Mac'     = 2
     'Linux'   = 3
+}
+
+$AccessType_Mapping = @{
+    'NotAssigned' = 0
+    'Allowed'     = 1
+    'Prohibited'  = 2
+}
+
+$ComplianceStatus_Mapping = @{
+    'NotAvailable'  = -1
+    'UnderLicensed' = 0
+    'OverLicensed'  = 1
+    'InCompliance'  = 2
+    'Expired'       = 3
+}
+
+$LicenseType_Mapping = @{
+    'Unidentified'  = 0
+    'Commercial'    = 1
+    'NonCommercial' = 2
+}
+
+$IsUsageProhibited_Mapping = @{
+    'NotAssigned' = 0
+    'Allowed'     = 1
+    'Prohibited'  = 2
 }
 
 # For APD collections.
