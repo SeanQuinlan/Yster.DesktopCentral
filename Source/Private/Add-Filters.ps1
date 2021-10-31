@@ -55,16 +55,19 @@ function Add-Filters {
         $Filters.Add('domainfilter={0}' -f $BoundParameters['Domain'])
     }
     if ($BoundParameters.ContainsKey('GroupCategory')) {
-        $Filters.Add('groupCategories={0}' -f $Group_Categories_Mapping[$BoundParameters['GroupCategory']])
+        $Filters.Add('groupCategories={0}' -f $GroupCategories_Mapping[$BoundParameters['GroupCategory']])
     }
     if ($BoundParameters.ContainsKey('GroupID')) {
         $Filters.Add('cgResourceIds={0}' -f ($BoundParameters['GroupID'] -join ','))
     }
     if ($BoundParameters.ContainsKey('GroupType')) {
-        $Filters.Add('groupTypes={0}' -f $Group_Types_Mapping[$BoundParameters['GroupType']])
+        $Filters.Add('groupTypes={0}' -f $GroupTypes_Mapping[$BoundParameters['GroupType']])
     }
     if ($BoundParameters.ContainsKey('Health')) {
         $Filters.Add('healthfilter={0}' -f $Health_Mapping[$BoundParameters['Health']])
+    }
+    if ($BoundParameters.ContainsKey('InstallStatus')) {
+        $Filters.Add('installstatusfilter={0}' -f $InstallStatus_Mapping[$BoundParameters['InstallStatus']])
     }
     if ($BoundParameters.ContainsKey('LiveStatus')) {
         $Filters.Add('livestatusfilter={0}' -f $LiveStatus_Mapping[$BoundParameters['LiveStatus']])
@@ -89,6 +92,9 @@ function Add-Filters {
     }
     if ($BoundParameters.ContainsKey('ResultSize')) {
         $Filters.Add('pagelimit={0}' -f $BoundParameters['ResultSize'])
+    }
+    if ($BoundParameters.ContainsKey('ScanStatus')) {
+        $Filters.Add('scanstatusfilter={0}' -f $ScanStatus_Mapping[$BoundParameters['ScanStatus']])
     }
     if ($BoundParameters.ContainsKey('SearchField')) {
         $Filters.Add('searchtype={0}' -f $BoundParameters['SearchField'])

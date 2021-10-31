@@ -77,8 +77,8 @@ function New-DCCustomGroup {
         $API_Path = 'dcapi/customGroups'
         $API_Body = @{
             'groupName'     = $GroupName
-            'groupCategory' = $Group_Categories_Mapping[$GroupCategory]
-            'groupType'     = $Group_Types_Mapping[$GroupType]
+            'groupCategory' = $GroupCategories_Mapping[$GroupCategory]
+            'groupType'     = $GroupTypes_Mapping[$GroupType]
             'resourceIds'   = $ResourceID
         }
         if ($PSBoundParameters.ContainsKey('Description')) {

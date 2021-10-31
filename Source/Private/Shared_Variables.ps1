@@ -34,12 +34,27 @@ $LiveStatus_Mapping = @{
     'Unknown' = 3
 }
 
-$Group_Types_Mapping = @{
+$InstallStatus_Mapping = @{
+    'YetToInstall'        = 21
+    'Installed'           = 22
+    'Uninstalled'         = 23
+    'YetToUninstall'      = 24
+    'InstallationFailure' = 29
+}
+
+$ScanStatus_Mapping = @{
+    'NotDone'    = -1
+    'Failed'     = 0
+    'InProgress' = 1
+    'Success'    = 2
+}
+
+$GroupTypes_Mapping = @{
     'Computer' = 1
     'User'     = 2
 }
 
-$Group_Categories_Mapping = @{
+$GroupCategories_Mapping = @{
     'Static'       = 1
     'Dynamic'      = 2
     'StaticUnique' = 5
@@ -52,7 +67,7 @@ $OSPlatform_Mapping = @{
 }
 
 # For APD collections.
-$Collection_Status_Mapping = @{
+$CollectionStatus_Mapping = @{
     'Active'    = 4
     'Suspended' = 5
 }

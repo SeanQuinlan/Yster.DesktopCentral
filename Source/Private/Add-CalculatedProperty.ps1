@@ -78,10 +78,10 @@ function Add-CalculatedProperty {
 
         # Group Properties
         if ($InputObject.'groupCategory') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupCategoryName' -Value ($Group_Categories_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupCategory' }).Name
+            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupCategoryName' -Value ($GroupCategories_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupCategory' }).Name
         }
         if ($InputObject.'groupType') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupTypeName' -Value ($Group_Types_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupType' }).Name
+            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupTypeName' -Value ($GroupTypes_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupType' }).Name
         }
 
         # OS Properties
@@ -91,7 +91,12 @@ function Add-CalculatedProperty {
 
         # Collection Properties
         if ($InputObject.'collection_status') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'CollectionStatus' -Value ($Collection_Status_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'collection_status' }).Name
+            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'CollectionStatus' -Value ($CollectionStatus_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'collection_status' }).Name
+        }
+
+        # Installation Status Properties
+        if ($InputObject.'installation_status') {
+            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'InstallationStatus' -Value ($InstallStatus_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'installation_status' }).Name
         }
 
         # Return the modified object
