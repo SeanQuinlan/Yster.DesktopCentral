@@ -33,11 +33,11 @@ function Invoke-DCPatchScan {
         [String]
         $HostName,
 
-        # The Resource ID to scan.
+        # The Resource ID or IDs to scan.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [Int]
+        [Int[]]
         $ResourceID,
 
         # Whether to skip the SSL certificate check.
@@ -53,7 +53,7 @@ function Invoke-DCPatchScan {
     try {
         $API_Path = 'patch/computers/scan'
         $Body = @{
-            'resourceids' = $ResourceID
+            'resourceids' = @($ResourceID)
         }
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
