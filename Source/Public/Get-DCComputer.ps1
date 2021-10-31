@@ -3,7 +3,7 @@ function Get-DCComputer {
     .SYNOPSIS
         Gets details of one or more computers.
     .DESCRIPTION
-        Gets a list of all computers in the environment, or filtered by Resource ID, status, office, or domain.
+        Gets a list of all computers in the environment, or filtered by Resource ID, live status, office, or domain.
     .EXAMPLE
         Get-DCComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 

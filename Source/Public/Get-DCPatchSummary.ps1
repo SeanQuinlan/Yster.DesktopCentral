@@ -3,7 +3,7 @@ function Get-DCPatchSummary {
     .SYNOPSIS
         Gets some basic information about patching in the environment.
     .DESCRIPTION
-        Returns some a small summary of information related to patching.
+        Returns a small summary of information related to patching.
 
         Examples are:
         - A summary of patch scanning
