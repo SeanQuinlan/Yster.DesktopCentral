@@ -104,8 +104,8 @@ function Get-DCResource {
         $API_Path = 'dcapi/customGroups/availableResources'
         $API_Body = @{
             'charFilter'    = $Search
-            'groupCategory' = $GroupCategories_Mapping[$GroupCategory]
-            'groupType'     = $GroupTypes_Mapping[$ResourceType]
+            'groupCategory' = $GroupCategoryName_Mapping[$GroupCategory]
+            'groupType'     = $GroupTypeName_Mapping[$ResourceType]
             'limit'         = $ResultSize
             # This can be used to get another "page" of results by setting the index to limit+1
             'rangeIndex'    = $RangeIndex

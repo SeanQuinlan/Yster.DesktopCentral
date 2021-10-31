@@ -55,13 +55,13 @@ function Add-Filters {
         $Filters.Add('domainfilter={0}' -f $BoundParameters['Domain'])
     }
     if ($BoundParameters.ContainsKey('GroupCategory')) {
-        $Filters.Add('groupCategories={0}' -f $GroupCategories_Mapping[$BoundParameters['GroupCategory']])
+        $Filters.Add('groupCategories={0}' -f $GroupCategoryName_Mapping[$BoundParameters['GroupCategory']])
     }
     if ($BoundParameters.ContainsKey('GroupID')) {
         $Filters.Add('cgResourceIds={0}' -f ($BoundParameters['GroupID'] -join ','))
     }
     if ($BoundParameters.ContainsKey('GroupType')) {
-        $Filters.Add('groupTypes={0}' -f $GroupTypes_Mapping[$BoundParameters['GroupType']])
+        $Filters.Add('groupTypes={0}' -f $GroupTypeName_Mapping[$BoundParameters['GroupType']])
     }
     if ($BoundParameters.ContainsKey('Health')) {
         $Filters.Add('healthfilter={0}' -f $Health_Mapping[$BoundParameters['Health']])
