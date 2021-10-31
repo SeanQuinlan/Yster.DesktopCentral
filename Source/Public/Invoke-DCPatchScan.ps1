@@ -33,6 +33,13 @@ function Invoke-DCPatchScan {
         [String]
         $HostName,
 
+        # The Resource ID to scan.
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ID')]
+        [Int]
+        $ResourceID,
+
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
