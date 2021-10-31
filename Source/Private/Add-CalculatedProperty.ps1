@@ -76,27 +76,26 @@ function Add-CalculatedProperty {
         # Time Properties
         Add-TimeProperty -BaseObject $InputObject
 
-        # Group Properties
-        if ($InputObject.'groupCategory') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupCategoryName' -Value ($GroupCategories_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupCategory' }).Name
-        }
-        if ($InputObject.'groupType') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'groupTypeName' -Value ($GroupTypes_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'groupType' }).Name
-        }
-
-        # OS Properties
-        if ($InputObject.'osPlatform') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'OSPlatformName' -Value ($OSPlatform_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'osPlatform' }).Name
-        }
-
-        # Collection Properties
-        if ($InputObject.'collection_status') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'CollectionStatus' -Value ($CollectionStatus_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'collection_status' }).Name
+        # Other properties to add.
+        # Hashtable Key is the value as returned from the server. The Hashtable Value is the new property to add.
+        $Other_Properties = @{
+            'collection_status'   = 'CollectionStatus'
+            'compliant_status'    = 'ComplianceStatus'
+            'groupCategory'       = 'GroupCategoryName'
+            'groupType'           = 'GroupTypeName'
+            'installation_status' = 'InstallStatus'
+            'is_usage_prohibited' = 'IsUsageProhibited'
+            'osPlatform'          = 'OSPlatformName'
+            'sw_type'             = 'LicenseType'
         }
 
-        # Installation Status Properties
-        if ($InputObject.'installation_status') {
-            $InputObject | Add-Member -MemberType 'NoteProperty' -Name 'InstallationStatus' -Value ($InstallStatus_Mapping.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.'installation_status' }).Name
+        foreach ($Other_Property in $Other_Properties.GetEnumerator()) {
+            if (($InputObject.$($Other_Property.Name) -as [string]) -and ($InputObject.$($Other_Property.Name) -ne '--')) {
+                Write-Verbose ('{0}|Adding Calculated Other property for: {1} [{2}]' -f $Function_Name, $Other_Property.Name, $InputObject.$($Other_Property.Name))
+                $Mapping_Property = Get-Variable -Name ('{0}_Mapping' -f $Other_Property.Value) -ValueOnly
+                $Other_Property_Value = ($Mapping_Property.GetEnumerator() | Where-Object { $_.Value -eq $InputObject.$($Other_Property.Name) }).Name
+                $InputObject | Add-Member -MemberType 'NoteProperty' -Name $Other_Property.Value -Value $Other_Property_Value
+            }
         }
 
         # Return the modified object
