@@ -1,11 +1,11 @@
-function Get-DCAPIComputerFileScanDetails {
+function Get-DCAPIFileScanDetails {
     <#
     .SYNOPSIS
         Gets the details of the last file scan for the resource ID.
     .DESCRIPTION
         Returns details of the last file scan time, the drives scanned and whether the summary is available.
     .EXAMPLE
-        Get-DCAPIComputerFileScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Get-DCAPIFileScanDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
         Returns file scan details for resource ID 101.
     .NOTES

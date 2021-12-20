@@ -1,13 +1,13 @@
-function Get-DCAPIComputerScanInProgress {
+function Get-DCAPIAgentUpgradeInProgress {
     <#
     .SYNOPSIS
-        Outputs whether there is a scan currently in progress.
+        Outputs whether there is an agent upgrade currently in progress.
     .DESCRIPTION
-        Returns a status message indicating whether there is currently a scan in progress.
+        Returns a status message indicating whether the Desktop Central agent is currently being upgraded.
     .EXAMPLE
-        Get-DCAPIComputerScanInProgress -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Get-DCAPIAgentUpgradeInProgress -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
-        Returns details of a scan in progress for resource ID 101.
+        Returns details of an agent upgrade in progress for resource ID 101.
     .NOTES
     #>
 
