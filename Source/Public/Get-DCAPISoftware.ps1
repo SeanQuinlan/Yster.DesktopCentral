@@ -1,13 +1,18 @@
 function Get-DCAPISoftware {
     <#
     .SYNOPSIS
-        Gets the list of software configured on the Desktop Central server.
+        Gets the list of software configured on the Desktop Central server, or a more detailed result from a specified software ID.
     .DESCRIPTION
-        Returns a list of all software available on the server, along with some basic information (Name, Manufacturer, Version, etc)
+        If no ID is supplied, this returns a list of all software available on the server, along with some basic information (Name, Manufacturer, Version, etc)
+        Specifying a software ID will return more detail on that software configuration.
     .EXAMPLE
         Get-DCAPISoftware -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
-        Gets a list of all configured software.
+        Gets a list of all configured software from the server.
+    .EXAMPLE
+        Get-DCAPISoftware -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -SoftwareID 100
+
+        Returns the details of the software with ID 100.
     .NOTES
     #>
 
@@ -36,14 +41,25 @@ function Get-DCAPISoftware {
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Switch]
-        $SkipCertificateCheck
+        $SkipCertificateCheck,
+
+        # The Software ID to return.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ID')]
+        [Int]
+        $SoftwareID
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'dcapi/inventory/software'
+        if ($PSBoundParameters.ContainsKey('SoftwareID')) {
+            $API_Path = 'dcapi/inventory/software/{0}' -f $SoftwareID
+        } else {
+            $API_Path = 'dcapi/inventory/software'
+        }
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
