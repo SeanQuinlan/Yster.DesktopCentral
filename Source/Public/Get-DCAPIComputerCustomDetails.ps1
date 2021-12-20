@@ -1,13 +1,24 @@
-function Get-DCAPIComputerCustomFields {
+function Get-DCAPIComputerCustomDetails {
     <#
     .SYNOPSIS
-        Returns the custom fields configured for the resource ID.
+        Returns the custom details that have been configured for the computer.
     .DESCRIPTION
-        Returns a list of custom fields for the specified resource ID, along with their values (if set).
-    .EXAMPLE
-        Get-DCAPIComputerCustomFields -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Returns a list of custom details for the specified resource ID, along with their values (if set).
+        The following custom details can be retrieved:
+            - Computer Location
+            - Search Tag
+            - Shipping Date
+            - Product Number
+            - Owner
+            - Owner Email ID
+            - Expiry Date
+            - Notes
 
-        Returns the custom fields and their values for resource ID 101.
+        Note: These custom details differ from Custom Fields for the computer. Custom Fields can have both the name and value defined, whereas Custom Details only allow setting of the value.
+    .EXAMPLE
+        Get-DCAPIComputerCustomDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+
+        Returns the custom details and their values for resource ID 101.
     .NOTES
     #>
 
