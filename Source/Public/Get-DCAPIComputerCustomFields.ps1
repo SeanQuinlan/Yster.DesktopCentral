@@ -1,11 +1,11 @@
-function Get-DCAPICustomField {
+function Get-DCAPIComputerCustomFields {
     <#
     .SYNOPSIS
         Returns the custom fields configured for the resource ID.
     .DESCRIPTION
         Returns a list of custom fields for the specified resource ID, along with their values (if set).
     .EXAMPLE
-        Get-DCAPICustomField -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
+        Get-DCAPIComputerCustomFields -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
         Returns the custom fields and their values for resource ID 101.
     .NOTES
