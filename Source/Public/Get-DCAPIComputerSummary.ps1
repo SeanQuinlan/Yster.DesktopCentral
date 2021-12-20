@@ -1,15 +1,14 @@
 function Get-DCAPIComputerSummary {
     <#
     .SYNOPSIS
-        Gets some summary information for the specified system.
+        Gets all the summary information for the specified system, or only the specified type.
     .DESCRIPTION
-        Returns summary information for the specified resource ID.
-        The default is to return some general information (Name, Domain, IP Address, Last Logged On User, etc).
-        Alternatively, a more specific type can be provided: Asset, DiskUsage, Hardware or OS.
+        Returns all the different summary information objects for the specified resource ID.
+        Alternatively, a more specific type can be provided: Asset, DiskUsage, General, Hardware or OS.
     .EXAMPLE
         Get-DCAPIComputerSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
-        Returns an object containing general summary information for the resource ID 101.
+        Returns an object containing all summary information for the resource ID 101.
     .EXAMPLE
         Get-DCAPIComputerSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101 -Type OS
 
@@ -61,7 +60,7 @@ function Get-DCAPIComputerSummary {
             'OS'
         )]
         [String]
-        $Type = 'General'
+        $Type
     )
 
     $Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name
@@ -76,7 +75,11 @@ function Get-DCAPIComputerSummary {
     }
 
     try {
-        $API_Path = 'dcapi/inventory/computers/{0}/{1}' -f $ResourceID, $SummaryType_Mapping[$Type]
+        if ($PSBoundParameters.ContainsKey('Type')) {
+            $API_Path = 'dcapi/inventory/computers/{0}/{1}' -f $ResourceID, $SummaryType_Mapping[$Type]
+        } else {
+            $API_Path = 'dcapi/inventory/computers/{0}/summary' -f $ResourceID
+        }
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
