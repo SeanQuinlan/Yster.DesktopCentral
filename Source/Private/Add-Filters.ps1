@@ -36,14 +36,20 @@ function Add-Filters {
     }
 
     $Filters = New-Object -TypeName 'System.Collections.Generic.List[String]'
+    if ($BoundParameters.ContainsKey('AccessType')) {
+        $Filters.Add('accesstypefilter={0}' -f $AccessType_Mapping[$BoundParameters['AccessType']])
+    }
     if ($BoundParameters.ContainsKey('ApprovalStatus')) {
         $Filters.Add('approvalstatusfilter={0}' -f $Approval_Status_Mapping[$BoundParameters['ApprovalStatus']])
     }
     if ($BoundParameters.ContainsKey('BranchOffice')) {
-        $Filters.Add('branchofficefilter={0}' -f ($BoundParameters['BranchOffice'] -replace '\s', '+'))
+        $Filters.Add('branchofficefilter={0}' -f $BoundParameters['BranchOffice'])
     }
     if ($BoundParameters.ContainsKey('BulletinID')) {
         $Filters.Add('bulletinid={0}' -f $BoundParameters['BulletinID'])
+    }
+    if ($BoundParameters.ContainsKey('ComplianceStatus')) {
+        $Filters.Add('compliancestatusfilter={0}' -f $ComplianceStatus_Mapping[$BoundParameters['ComplianceStatus']])
     }
     if ($BoundParameters.ContainsKey('ConfigStatus')) {
         $Filters.Add('configstatusfilter={0}' -f $BoundParameters['ConfigStatus'])
@@ -63,14 +69,26 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('GroupType')) {
         $Filters.Add('groupTypes={0}' -f $GroupTypeName_Mapping[$BoundParameters['GroupType']])
     }
+    if ($BoundParameters.ContainsKey('HardwareType')) {
+        $Filters.Add('hardwaretypefilter={0}' -f $HardwareType)
+    }
     if ($BoundParameters.ContainsKey('Health')) {
         $Filters.Add('healthfilter={0}' -f $Health_Mapping[$BoundParameters['Health']])
     }
     if ($BoundParameters.ContainsKey('InstallStatus')) {
         $Filters.Add('installstatusfilter={0}' -f $InstallStatus_Mapping[$BoundParameters['InstallStatus']])
     }
+    if ($BoundParameters.ContainsKey('LicenseType')) {
+        $Filters.Add('licensetypefilter={0}' -f $LicenseType_Mapping[$BoundParameters['LicenseType']])
+    }
     if ($BoundParameters.ContainsKey('LiveStatus')) {
         $Filters.Add('livestatusfilter={0}' -f $LiveStatus_Mapping[$BoundParameters['LiveStatus']])
+    }
+    if ($BoundParameters.ContainsKey('Manufacturer')) {
+        $Filters.Add('manufacturerfilter={0}' -f $Manufacturer)
+    }
+    if ($BoundParameters.ContainsKey('OSCompatibility')) {
+        $Filters.Add('oscompatibilityfilter={0}' -f $OSCompatibility)
     }
     if ($BoundParameters.ContainsKey('Page')) {
         $Filters.Add('page={0}' -f $BoundParameters['Page'])
@@ -105,6 +123,9 @@ function Add-Filters {
     }
     if ($BoundParameters.ContainsKey('Severity')) {
         $Filters.Add('severityfilter={0}' -f $Severity_Mapping[$BoundParameters['Severity']])
+    }
+    if ($BoundParameters.ContainsKey('SoftwareID')) {
+        $Filters.Add('swid={0}' -f $SoftwareID)
     }
     if ($BoundParameters.ContainsKey('TaskName')) {
         $Filters.Add('taskname={0}' -f $BoundParameters['TaskName'])
