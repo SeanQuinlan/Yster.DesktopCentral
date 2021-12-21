@@ -11,7 +11,7 @@ function Disable-DCAPISoftwareMeteringRule {
     .NOTES
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -59,9 +59,21 @@ function Disable-DCAPISoftwareMeteringRule {
             'SkipCertificateCheck' = $SkipCertificateCheck
             'ContentType'          = 'application/disableMeteringRule.v1+json'
         }
-        Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-        $Query_Return = Invoke-DCQuery @Query_Parameters
-        $Query_Return
+
+        $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'
+        [void]$Confirm_Header.AppendLine('Confirm')
+        [void]$Confirm_Header.AppendLine('Are you sure you want to perform this action?')
+
+        $Remove_ShouldProcess = New-Object -TypeName 'System.Text.StringBuilder'
+        [void]$Remove_ShouldProcess.AppendLine(('Disable Software Metering Rule: {0}' -f $RuleID))
+
+        $Whatif_Statement = $Remove_ShouldProcess.ToString().Trim()
+        $Confirm_Statement = $Whatif_Statement
+        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, $Confirm_Header.ToString())) {
+            Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
+            $Query_Return = Invoke-DCQuery @Query_Parameters
+            $Query_Return
+        }
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {
