@@ -1,7 +1,7 @@
 function Get-DCAPIInventoryScanScheduleConfigured {
     <#
     .SYNOPSIS
-        Returns a true/false result depending on whether an inventory scan scheduled is configured or not.
+        Returns a true/false result depending on whether an inventory scan schedule is configured or not.
     .DESCRIPTION
         A simple true/false value returned if the inventory scan is scheduled or not. This only checks if the scan schedule has been set up.
         Note: if the scan schedule is configured and also disabled, this will still return $true.
@@ -10,6 +10,7 @@ function Get-DCAPIInventoryScanScheduleConfigured {
 
         Returns $true if the inventory scan schedule is configured. Otherwise returns $false.
     .NOTES
+        See Get-DCAPIFileScanConfigured to confirm if the file scan itself is configured.
     #>
 
     [CmdletBinding()]
@@ -54,7 +55,12 @@ function Get-DCAPIInventoryScanScheduleConfigured {
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
-        [Boolean]$Query_Return
+        # Convert the True/False string status to boolean.
+        if ($Query_Return.'status' -eq 'True') {
+            $true
+        } else {
+            $false
+        }
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {

@@ -1,14 +1,15 @@
 function Get-DCAPIFileScanConfigured {
     <#
     .SYNOPSIS
-        Outputs whether the inventory file scan is configured.
+        Outputs true or false depending on whether the inventory file scan is configured on the server or not.
     .DESCRIPTION
-        Returns a status message indicating whether the inventory file scan scheduler is enabled.
+        Returns a boolean true/false result indicating whether the scheduler for the inventory file scan is configured on the server.
     .EXAMPLE
         Get-DCAPIFileScanConfigured -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
-        Returns a status message indicating whether the inventory file scan is enabled.
+        Returns $true if the inventory file scan is enabled, otherwise returns $false.
     .NOTES
+        See Get-DCAPIInventoryScanScheduleConfigured to confirm if the schedule for the file scan is configured.
     #>
 
     [CmdletBinding()]
@@ -53,7 +54,12 @@ function Get-DCAPIFileScanConfigured {
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
-        $Query_Return
+        # Convert the Yes/No status to boolean.
+        if ($Query_Return.'status' -eq 'Yes') {
+            $true
+        } else {
+            $false
+        }
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {

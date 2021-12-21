@@ -52,6 +52,7 @@ function Disable-DCAPISoftwareMetering {
             'SkipCertificateCheck' = $SkipCertificateCheck
             'ContentType'          = 'application/settingsEnable.v1+json'
         }
+
         $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'
         [void]$Confirm_Header.AppendLine('Confirm')
         [void]$Confirm_Header.AppendLine('Are you sure you want to perform this action?')

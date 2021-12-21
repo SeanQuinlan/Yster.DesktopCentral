@@ -3,7 +3,7 @@ function Get-DCAPIAlerts {
     .SYNOPSIS
         Gets the list of alerts that have been configured on the Desktop Central server.
     .DESCRIPTION
-        Returns a list of all configured alerts, broken down into the categories found on the Inventory - Configure Alerts page.
+        Returns a list of all configured alerts, broken down into the categories found on the "Inventory - Configure Alerts" page.
     .EXAMPLE
         Get-DCAPIAlerts -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 

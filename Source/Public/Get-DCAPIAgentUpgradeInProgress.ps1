@@ -1,13 +1,13 @@
 function Get-DCAPIAgentUpgradeInProgress {
     <#
     .SYNOPSIS
-        Outputs whether there is an agent upgrade currently in progress.
+        Outputs true/false depending on whether there is an agent upgrade currently in progress.
     .DESCRIPTION
-        Returns a status message indicating whether the Desktop Central agent is currently being upgraded.
+        Returns a boolean true/false indicating whether the Desktop Central agent is currently being upgraded.
     .EXAMPLE
         Get-DCAPIAgentUpgradeInProgress -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
-        Returns details of an agent upgrade in progress for resource ID 101.
+        Returns $true if an agent upgrade is in progress for resource ID 101, otherwise returns $false.
     .NOTES
     #>
 
@@ -50,7 +50,7 @@ function Get-DCAPIAgentUpgradeInProgress {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = 'dcapi/inventory/computers/{0}/scanInProgress' -f $ResourceID
+        $API_Path = 'dcapi/inventory/computers/{0}/agentUpgradeInProgress' -f $ResourceID
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
@@ -60,7 +60,12 @@ function Get-DCAPIAgentUpgradeInProgress {
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
-        $Query_Return
+        # Convert the Yes/No status to boolean.
+        if ($Query_Return.'status' -eq 'Yes') {
+            $true
+        } else {
+            $false
+        }
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {

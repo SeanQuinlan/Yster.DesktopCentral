@@ -3,11 +3,11 @@ function Get-DCAPIComputerScanStatus {
     .SYNOPSIS
         Gets the scan status for the supplied ID.
     .DESCRIPTION
-        Returns the current scan status for the computer with the specified ID.
+        Returns the most recent scan status for the computer with the specified ID.
     .EXAMPLE
         Get-DCAPIComputerScanStatus -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
-        Returns the scan status for resource ID 101.
+        Returns the most recent scan status for resource ID 101.
     .NOTES
     #>
 
@@ -32,7 +32,7 @@ function Get-DCAPIComputerScanStatus {
         [String]
         $HostName,
 
-        # The Resource ID to return.
+        # The Resource ID to target.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
@@ -60,7 +60,7 @@ function Get-DCAPIComputerScanStatus {
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
-        $Query_Return
+        $Query_Return.'status'
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {

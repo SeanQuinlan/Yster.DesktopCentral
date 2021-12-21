@@ -1,7 +1,7 @@
 function Get-DCAPIComputerSummary {
     <#
     .SYNOPSIS
-        Gets all the summary information for the specified system, or only the specified type.
+        Gets all the summary information for the specified system, or only a specific type.
     .DESCRIPTION
         Returns all the different summary information objects for the specified resource ID.
         Alternatively, a more specific type can be provided: Asset, DiskUsage, General, Hardware or OS.

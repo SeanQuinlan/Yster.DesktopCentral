@@ -32,7 +32,7 @@ function Disable-DCAPISoftwareMeteringRule {
         [String]
         $HostName,
 
-        # The rule ID to disable.
+        # The Rule ID to disable.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]

@@ -1,7 +1,7 @@
 function Get-DCAPIComputerGroups {
     <#
     .SYNOPSIS
-        Gets a list of local groups for the resource.
+        Gets a list of local groups for the computer with the supplied ID.
     .DESCRIPTION
         Returns a list of all local groups configured on the specified resource ID.
         If querying a domain controller, all domain groups will be returned.
@@ -33,7 +33,7 @@ function Get-DCAPIComputerGroups {
         [String]
         $HostName,
 
-        # The Resource ID to return.
+        # The Resource ID to target.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]

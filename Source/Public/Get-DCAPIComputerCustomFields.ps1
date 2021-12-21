@@ -34,7 +34,7 @@ function Get-DCAPIComputerCustomFields {
         [String]
         $HostName,
 
-        # The Resource ID to return.
+        # The Resource ID to target.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]

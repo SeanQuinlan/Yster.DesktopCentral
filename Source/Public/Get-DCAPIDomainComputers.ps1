@@ -19,7 +19,7 @@ function Get-DCAPIDomainComputers {
         [String]
         $AuthToken,
 
-        # The Domain ID to return.
+        # The Domain ID to target.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]

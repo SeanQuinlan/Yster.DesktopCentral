@@ -32,7 +32,7 @@ function Enable-DCAPISoftwareMeteringRule {
         [String]
         $HostName,
 
-        # The rule ID to enable.
+        # The Rule ID to enable.
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
