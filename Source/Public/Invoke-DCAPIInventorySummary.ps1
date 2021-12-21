@@ -11,7 +11,7 @@ function Invoke-DCAPIInventorySummary {
     .NOTES
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -52,9 +52,17 @@ function Invoke-DCAPIInventorySummary {
             'SkipCertificateCheck' = $SkipCertificateCheck
             'ContentType'          = 'application/generateInventoryHomeSummary.v1+json'
         }
-        Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-        $Query_Return = Invoke-DCQuery @Query_Parameters
-        $Query_Return
+
+        $ShouldProcess_Statement = New-Object -TypeName 'System.Text.StringBuilder'
+        [void]$ShouldProcess_Statement.AppendLine('Start the Inventory Summary generation process')
+
+        $Whatif_Statement = $ShouldProcess_Statement.ToString().Trim()
+        $Confirm_Statement = ('Are you sure you want to perform this action?', $Whatif_Statement) -join [Environment]::NewLine
+        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, 'Confirm')) {
+            Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
+            $Query_Return = Invoke-DCQuery @Query_Parameters
+            $Query_Return
+        }
 
     } catch {
         if ($_.FullyQualifiedErrorId -match '^DC-') {

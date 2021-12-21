@@ -62,16 +62,13 @@ function Resume-DCAPDTask {
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
 
-        $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'
-        [void]$Confirm_Header.AppendLine('Confirm')
-        [void]$Confirm_Header.AppendLine('Are you sure you want to perform this action?')
-
         $Remove_ShouldProcess = New-Object -TypeName 'System.Text.StringBuilder'
+        [void]$Remove_ShouldProcess.AppendLine('Are you sure you want to perform this action?')
         [void]$Remove_ShouldProcess.AppendLine(('Resume APD task: {0}' -f $TaskName))
 
         $Whatif_Statement = $Remove_ShouldProcess.ToString().Trim()
         $Confirm_Statement = $Whatif_Statement
-        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, $Confirm_Header.ToString())) {
+        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, 'Confirm')) {
             Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
 
             # NOTE: As of v10.1.2127.12 of Desktop Central, the API returns error "Problem has  occurred while resuming the task" when resuming any task.

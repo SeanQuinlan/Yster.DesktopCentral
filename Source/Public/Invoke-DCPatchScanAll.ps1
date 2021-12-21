@@ -53,16 +53,12 @@ function Invoke-DCPatchScanAll {
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
 
-        $Confirm_Header = New-Object -TypeName 'System.Text.StringBuilder'
-        [void]$Confirm_Header.AppendLine('Confirm')
-        [void]$Confirm_Header.AppendLine('Are you sure you want to perform this action?')
+        $ShouldProcess_Statement = New-Object -TypeName 'System.Text.StringBuilder'
+        [void]$ShouldProcess_Statement.AppendLine('Start a patch scan on all computers')
 
-        $Remove_ShouldProcess = New-Object -TypeName 'System.Text.StringBuilder'
-        [void]$Remove_ShouldProcess.AppendLine('Start a patch scan on all computers')
-
-        $Whatif_Statement = $Remove_ShouldProcess.ToString().Trim()
-        $Confirm_Statement = $Whatif_Statement
-        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, $Confirm_Header.ToString())) {
+        $Whatif_Statement = $ShouldProcess_Statement.ToString().Trim()
+        $Confirm_Statement = ('Are you sure you want to perform this action?', $Whatif_Statement) -join [Environment]::NewLine
+        if ($PSCmdlet.ShouldProcess($Whatif_Statement, $Confirm_Statement, 'Confirm')) {
             Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
             $Query_Return = Invoke-DCQuery @Query_Parameters
             $Query_Return
