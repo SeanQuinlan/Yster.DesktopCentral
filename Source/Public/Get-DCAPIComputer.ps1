@@ -1,13 +1,18 @@
 function Get-DCAPIComputer {
     <#
     .SYNOPSIS
-        Gets the name, ID and domain for all computers.
+        Gets the name, ID and domain for all computers, or some additional information if a resource ID is specified.
     .DESCRIPTION
-        Returns a list of all computers with only 3 properties: name, ID and domain.
+        If no resource ID is given, this returns a list of all computers with only 3 properties: name, ID and domain.
+        If a resource ID is supplied, then the same information plus OS flavour, OS ID and live status.
     .EXAMPLE
         Get-DCAPIComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Gets a list of all registered computers.
+    .EXAMPLE
+        Get-DCAPIComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 1000
+
+        Gets the details of the computer with resource ID 1000.
     .NOTES
     #>
 
@@ -32,6 +37,13 @@ function Get-DCAPIComputer {
         [String]
         $HostName,
 
+        # The Resource ID to return.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ID')]
+        [Int]
+        $ResourceID,
+
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -43,7 +55,11 @@ function Get-DCAPIComputer {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'dcapi/inventory/computers'
+        if ($PSBoundParameters.ContainsKey('ResourceID')) {
+            $API_Path = 'dcapi/som/computers/{0}' -f $ResourceID
+        } else {
+            $API_Path = 'dcapi/inventory/computers'
+        }
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
