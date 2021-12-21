@@ -1,4 +1,4 @@
-function Set-DCCustomGroup {
+function Set-DCAPICustomGroup {
     <#
     .SYNOPSIS
         Modifies a custom group.
@@ -7,7 +7,7 @@ function Set-DCCustomGroup {
 
         The GroupID and ResourceID parameters are required.
     .EXAMPLE
-        Set-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupID 601 -ResourceID 301 -GroupName 'Modified CG1'
+        Set-DCAPICustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupID 601 -ResourceID 301 -GroupName 'Modified CG1'
 
         Updates the custom group with the ID 601 and changes the group members to ResourceID 301 and the group name to "Modified CG1"
     .NOTES

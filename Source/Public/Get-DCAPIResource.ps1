@@ -1,4 +1,4 @@
-function Get-DCResource {
+function Get-DCAPIResource {
     <#
     .SYNOPSIS
         Returns a list of resources (users or computers), filtered by certain parameters.
@@ -8,15 +8,15 @@ function Get-DCResource {
         For users, only name, domain and resource ID are returned.
         For computers, name, domain, resource ID and OS platform are returned.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer
+        Get-DCAPIResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer
 
         Returns a list of all computer resources on the server.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer -Domain 'CONTOSO' -Search 'SRV'
+        Get-DCAPIResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType computer -Domain 'CONTOSO' -Search 'SRV'
 
         Returns a list of all computer resources in the CONTOSO domain with the characters "SRV" somewhere in the name.
     .EXAMPLE
-        Get-DCResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType user -Search 'admin'
+        Get-DCAPIResource -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceType user -Search 'admin'
 
         Returns a list of all user resources with the characters "admin" somewhere in the name.
     .NOTES

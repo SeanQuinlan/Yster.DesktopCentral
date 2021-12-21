@@ -1,4 +1,4 @@
-function Get-DCCustomGroup {
+function Get-DCAPICustomGroup {
     <#
     .SYNOPSIS
         Gets details of all custom groups or a filtered list of custom groups.
@@ -7,15 +7,15 @@ function Get-DCCustomGroup {
 
         With no filters it will return all groups on the server, or can be filtered by group ID (single or array of IDs), group category (Static, StaticUnique or Dynamic) or by group type (user or computer).
     .EXAMPLE
-        Get-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
+        Get-DCAPICustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
         Returns all custom groups on the server.
     .EXAMPLE
-        Get-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupID 601,301,304
+        Get-DCAPICustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupID 601,301,304
 
         Returns the custom groups with the IDs 601, 301 and 304.
     .EXAMPLE
-        Get-DCCustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType 'Computer' -GroupCategory 'Static'
+        Get-DCAPICustomGroup -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupType 'Computer' -GroupCategory 'Static'
 
         Returns all the static computer custom groups.
     .NOTES
