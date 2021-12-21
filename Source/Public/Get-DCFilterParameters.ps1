@@ -1,9 +1,15 @@
 function Get-DCFilterParameters {
     <#
     .SYNOPSIS
-        Returns the filters that can be used for xxxx
+        Returns the filters that can be used in other functions.
     .DESCRIPTION
-
+        Outputs the following list of filter categories and the parameters that can be used in those categories.
+        - Category
+        - Computer Manufacturer
+        - Hardware Manufacturer
+        - Hardware Type
+        - OS
+        - Software Manufacturer
     .EXAMPLE
         Get-DCFilterParameters -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
