@@ -6,8 +6,8 @@ BeforeAll {
     }
 }
 
-Describe 'Add-CalculatedProperty' -Tags 'Unit' {
-    BeforeEach {
+Describe 'Add-CalculatedProperty' -Tags @('Unit') {
+    BeforeAll {
         $TestObject = [pscustomobject]@{
             'test_time'         = 1634566990000
             'groupCategory'     = 5
