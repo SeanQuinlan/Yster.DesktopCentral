@@ -67,11 +67,13 @@ Describe 'Function Validation' -Tags 'Module', 'Unit' {
 
     Context 'Function variables' {
         It '<FunctionName> has no global variables defined' -TestCases $TestCases {
+            # Find all variables, including those in sub-functions (the $true at the end).
             $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $true)
             $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -match 'global') } | Should -Be $null
         }
         It '<FunctionName> has Function_Name parameter declaration' -TestCases $TestCases {
             $Function_Name_Declaration = '$Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name'
+            # Only look for the above variable declaration in the main function, not sub-functions.
             $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $false)
             $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -eq 'Function_Name') -and ($_.Parent.Extent.Text -eq $Function_Name_Declaration) } | Should -Be $true
         }
@@ -81,11 +83,13 @@ Describe 'Function Validation' -Tags 'Module', 'Unit' {
     Context 'Function implements ShouldProcess' {
         It '<FunctionName> has SupportsShouldProcess set to $true' -TestCases $ShouldProcess_TestCases {
             $ShouldProcess_Text = 'SupportsShouldProcess = $true'
+            # Get the first param block in the main function, and do not recurse into sub-functions.
             $Param_Block = $Function_AST.Find({return ($args[0] -is [System.Management.Automation.Language.ParamBlockAst])}, $false)
             $Param_Block.Attributes.NamedArguments | Where-Object { $_.ArgumentName -eq 'SupportsShouldProcess' -and ($_.Extent.Text -eq $ShouldProcess_Text) } | Should -Not -BeNullOrEmpty
         }
 
         It '<FunctionName> has $PSCmdlet.ShouldProcess line' -TestCases $ShouldProcess_TestCases {
+            # Look for a $PSCmdlet.ShouldProcess line in the main function only (ignoring sub-functions).
             $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $false)
             $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -eq 'PSCmdlet') -and ($_.Parent.Extent.Text -match '\$PSCmdlet.ShouldProcess')} | Should -Not -BeNullOrEmpty
         }
