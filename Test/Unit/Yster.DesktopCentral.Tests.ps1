@@ -1,16 +1,19 @@
 # Some helpful links:
 # https://stackoverflow.com/questions/62497134/pester-5-0-2-beforeall-block-code-not-showing-up-in-describe-block
+# https://vexx32.github.io/2018/12/20/Searching-PowerShell-Abstract-Syntax-Tree/
 
 Describe 'Function Validation' -Tags 'Module', 'Unit' {
     $Module_Root = Join-Path -Path $PSScriptRoot -ChildPath '..\..\Source'
     $Module_Path = Get-ChildItem -Path $Module_Root -Filter 'Yster.DesktopCentral.psd1'
-    $Module_Information = Import-Module -Name $Module_Path.PSPath -Force -ErrorAction 'Stop' -PassThru
+    $global:Module_Information = Import-Module -Name $Module_Path.PSPath -Force -ErrorAction 'Stop' -PassThru
     $Module_ExportedFunctions = $Module_Information.ExportedFunctions.Values.Name
 
-    [System.Collections.ArrayList]$TestCases = @()
+    $TestCases = New-Object -TypeName System.Collections.Generic.List[Hashtable]
     $Module_ExportedFunctions | ForEach-Object {
         [void]$TestCases.Add(@{FunctionName = $_})
     }
+    $ShouldProcess_Verbs = @('Add', 'Disable', 'Enable', 'Install', 'Invoke', 'Set', 'Remove', 'Resume', 'Suspend', 'Uninstall', 'Update')
+    $ShouldProcess_TestCases = $TestCases | Where-Object { $ShouldProcess_Verbs -contains ($_['FunctionName'].Split('-'))[0] }
 
     BeforeEach {
         $Function_Contents = Get-Content -Path function:$FunctionName
@@ -40,7 +43,8 @@ Describe 'Function Validation' -Tags 'Module', 'Unit' {
         It '<FunctionName> has indented comment block' -TestCases $TestCases {
             $null = $Function_Contents -match '(?ms)\s+\<\#.*\>\#?'
             $Function_CommentsNotIndented = $matches[0].Split("`n") -notmatch '^[\t|\s{4}]'
-            $Function_CommentsNotIndented.Count | Should -Be 0        }
+            $Function_CommentsNotIndented.Count | Should -Be 0
+        }
     }
 
     # Inspired from: https://lazywinadmin.com/2016/08/powershellpester-make-sure-your.html
@@ -62,15 +66,28 @@ Describe 'Function Validation' -Tags 'Module', 'Unit' {
     }
 
     Context 'Function variables' {
-        # It '<FunctionName> has no global variables defined' -TestCases $TestCases {
-        #     $Function_Nodes = $Function_AST.FindAll( { $true }, $false) | Where-Object { $_.GetType().Name -eq 'VariableExpressionAst' }
-        #     $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -match 'global') } | Should -Be $null
-        # }
+        It '<FunctionName> has no global variables defined' -TestCases $TestCases {
+            $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $true)
+            $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -match 'global') } | Should -Be $null
+        }
         It '<FunctionName> has Function_Name parameter declaration' -TestCases $TestCases {
             $Function_Name_Declaration = '$Function_Name = (Get-Variable MyInvocation -Scope 0).Value.MyCommand.Name'
-            $Function_Nodes = $Function_AST.FindAll( { $true }, $false) | Where-Object { $_.GetType().Name -eq 'VariableExpressionAst' }
+            $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $false)
             $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -eq 'Function_Name') -and ($_.Parent.Extent.Text -eq $Function_Name_Declaration) } | Should -Be $true
         }
     }
 
+    # Inspired from: https://vexx32.github.io/2018/12/20/Searching-PowerShell-Abstract-Syntax-Tree/
+    Context 'Function implements ShouldProcess' {
+        It '<FunctionName> has SupportsShouldProcess set to $true' -TestCases $ShouldProcess_TestCases {
+            $ShouldProcess_Text = 'SupportsShouldProcess = $true'
+            $Param_Block = $Function_AST.Find({return ($args[0] -is [System.Management.Automation.Language.ParamBlockAst])}, $false)
+            $Param_Block.Attributes.NamedArguments | Where-Object { $_.ArgumentName -eq 'SupportsShouldProcess' -and ($_.Extent.Text -eq $ShouldProcess_Text) } | Should -Not -BeNullOrEmpty
+        }
+
+        It '<FunctionName> has $PSCmdlet.ShouldProcess line' -TestCases $ShouldProcess_TestCases {
+            $Function_Nodes = $Function_AST.FindAll({return ($args[0] -is [System.Management.Automation.Language.VariableExpressionAst])}, $false)
+            $Function_Nodes | Where-Object { ($_.VariablePath.UserPath -eq 'PSCmdlet') -and ($_.Parent.Extent.Text -match '\$PSCmdlet.ShouldProcess')} | Should -Not -BeNullOrEmpty
+        }
+    }
 }
