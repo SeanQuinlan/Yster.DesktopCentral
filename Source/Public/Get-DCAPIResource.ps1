@@ -23,7 +23,7 @@ function Get-DCAPIResource {
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [CmdletBinding()]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
