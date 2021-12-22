@@ -111,7 +111,7 @@ Describe 'Function Validation for: <FunctionName>' -Tags @('Module', 'Unit') -Fo
     }
 }
 
-Describe 'ShouldProcess Validation for: <FunctionName>' -ForEach $ShouldProcess_TestCases {
+Describe 'ShouldProcess Validation for: <FunctionName>' -Tags @('Module', 'Unit') -ForEach $ShouldProcess_TestCases {
     BeforeAll {
         $Function_Contents = Get-Content -Path function:$FunctionName
         $Function_AST = [System.Management.Automation.Language.Parser]::ParseInput($Function_Contents, [ref]$null, [ref]$null)
