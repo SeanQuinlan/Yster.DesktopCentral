@@ -28,14 +28,10 @@ function ConvertTo-SortedPSObject {
     }
 
     process {
-        if (-not $PSBoundParameters.ContainsKey('InputObject')) {
-            $InputObject = $_
-        }
-
-        if ($InputObject -is [Hashtable]) {
+        if ($InputObject.GetType().Name -eq 'Hashtable') {
             Write-Verbose ('{0}|Hashtable type' -f $Function_Name)
             $Input_Object_Properties = $InputObject.GetEnumerator()
-        } elseif ($InputObject -is [PSObject]) {
+        } elseif ($InputObject.GetType().Name -eq 'PSCustomObject') {
             Write-Verbose ('{0}|PSObject type' -f $Function_Name)
             $Input_Object_Properties = $InputObject.PSObject.Properties
         } else {
@@ -46,7 +42,8 @@ function ConvertTo-SortedPSObject {
         $Input_Object_Sorted = [Ordered]@{}
         $Input_Object_Properties | Sort-Object -Property 'Name' | ForEach-Object {
             # Sort any sub-objects if required.
-            if ($_.Value -is [Array]) {
+            if ((($_.Value -is [Array]) -and ($_.Value[0].GetType().Name -eq 'PSCustomObject')) -or ($_.Value.GetType().Name -eq 'Hashtable')) {
+                Write-Verbose ('{0}|Sorting sub-property: {1}' -f $Function_Name, $_.Name)
                 $Value = $_.Value | ConvertTo-SortedPSObject
             } else {
                 $Value = $_.Value
