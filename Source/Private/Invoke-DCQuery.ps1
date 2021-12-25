@@ -151,37 +151,54 @@ function Invoke-DCQuery {
             $Return_Object | Add-CalculatedProperty | ConvertTo-SortedPSObject
         } catch [System.Net.WebException] {
             if ($_.ErrorDetails.Message) {
-                $Returned_ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json
-                switch -Wildcard ($_.Exception.Message) {
+                $global:InnerException = $_
+                $Returned_ErrorDetails = $InnerException.ErrorDetails.Message | ConvertFrom-Json
+                switch -Wildcard ($InnerException.Exception.Message) {
                     'The remote server returned an error: (401) Unauthorized*' {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'    = 'System.Net.WebException'
-                            'ID'           = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
-                            'Category'     = 'SecurityError'
-                            'TargetObject' = $API_Uri
-                            'Message'      = $Returned_ErrorDetails.ErrorMsg
+                            'Exception'      = 'System.Net.WebException'
+                            'ID'             = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
+                            'Category'       = 'SecurityError'
+                            'TargetObject'   = $API_Uri
+                            'Message'        = $Returned_ErrorDetails.ErrorMsg
+                            'InnerException' = $InnerException.Exception
                         }
                         $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                         $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
                     'The remote name could not be resolved*' {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'    = 'System.Net.WebException'
-                            'ID'           = 'DC-NameResolutionFailure'
-                            'Category'     = 'ResourceUnavailable'
-                            'TargetObject' = $API_Uri
-                            'Message'      = $_
+                            'Exception'      = 'System.Net.WebException'
+                            'ID'             = 'DC-NameResolutionFailure'
+                            'Category'       = 'ResourceUnavailable'
+                            'TargetObject'   = $API_Uri
+                            'Message'        = $_
+                            'InnerException' = $InnerException.Exception
+                        }
+                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                    }
+                    # When trying to set a custom group and providing only invalid resource IDs, the resulting JSON doesn't contain ErrorCode and ErrorMsg properties.
+                    'The remote server returned an error: (412)*' {
+                        $Terminating_ErrorRecord_Parameters = @{
+                            'Exception'      = 'System.Net.WebException'
+                            'ID'             = 'DC-HTTP-Error-{0}' -f $InnerException.Exception.Response.StatusDescription
+                            'Category'       = 'InvalidResult'
+                            'TargetObject'   = $API_Uri
+                            'Message'        = $InnerException.ErrorDetails.Message
+                            'InnerException' = $InnerException.Exception
                         }
                         $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                         $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
                     default {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'    = 'System.Net.WebException'
-                            'ID'           = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
-                            'Category'     = 'InvalidResult'
-                            'TargetObject' = $API_Uri
-                            'Message'      = $Returned_ErrorDetails.ErrorMsg
+                            'Exception'      = 'System.Net.WebException'
+                            'ID'             = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
+                            'Category'       = 'InvalidResult'
+                            'TargetObject'   = $API_Uri
+                            'Message'        = $Returned_ErrorDetails.ErrorMsg
+                            'InnerException' = $InnerException.Exception
                         }
                         $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                         $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
@@ -189,11 +206,12 @@ function Invoke-DCQuery {
                 }
             } else {
                 $Terminating_ErrorRecord_Parameters = @{
-                    'Exception'    = 'System.Net.WebException'
-                    'ID'           = 'DC-ConnectionError'
-                    'Category'     = 'InvalidResult'
-                    'TargetObject' = $API_Uri
-                    'Message'      = $_.Exception.Message
+                    'Exception'      = 'System.Net.WebException'
+                    'ID'             = 'DC-ConnectionError'
+                    'Category'       = 'InvalidResult'
+                    'TargetObject'   = $API_Uri
+                    'Message'        = $_.Exception.Message
+                    'InnerException' = $_.Exception
                 }
                 $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                 $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
