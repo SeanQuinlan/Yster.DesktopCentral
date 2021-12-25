@@ -13,7 +13,7 @@ function Add-DCAPICustomGroupMember {
     .EXAMPLE
         Add-DCAPICustomGroupMember -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupName "All Servers" -ResourceID 301
 
-        Adds compute with ID 301 to the custom group "All Servers".
+        Adds computer with ID 301 to the custom group "All Servers".
     .NOTES
     #>
 
@@ -73,27 +73,23 @@ function Add-DCAPICustomGroupMember {
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
 
-        switch ($PsCmdlet.ParameterSetName) {
-            'GroupID' {
-                $Existing_Group = Get-DCAPICustomGroup @Common_Parameters -GroupID $GroupID
-            }
-            'GroupName' {
-                $Existing_Group = Get-DCAPICustomGroup @Common_Parameters | Where-Object { $_.groupName -eq $GroupName }
-                if (-not $Existing_Group) {
-                    $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.Net.WebException'
-                        'ID'           = 'DC-CustomGroupNotFound'
-                        'Category'     = 'ObjectNotFound'
-                        'TargetObject' = $GroupName
-                        'Message'      = 'Unable to find custom group with name: {0}' -f $GroupName
-                    }
-                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+        if ($PsCmdlet.ParameterSetName -eq 'GroupName') {
+            $Group_Lookup = Get-DCAPICustomGroup @Common_Parameters | Where-Object { $_.groupName -eq $GroupName }
+            if (-not $Group_Lookup) {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Net.WebException'
+                    'ID'           = 'DC-CustomGroupNotFound'
+                    'Category'     = 'ObjectNotFound'
+                    'TargetObject' = $GroupName
+                    'Message'      = 'Unable to find custom group with name: {0}' -f $GroupName
                 }
-                $GroupID = $Existing_Group.groupId
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
             }
+            $GroupID = $Group_Lookup.groupId
         }
-        $New_GroupMembers = ($Existing_Group.groupMembers.ResourceId -as [array]) + $ResourceID
+        $Existing_Group = Get-DCAPICustomGroup @Common_Parameters -GroupID $GroupID
+        $New_GroupMembers = ($Existing_Group.groupMembers.resourceId -as [Int[]]) + $ResourceID
 
         $ShouldProcess_Statement = New-Object -TypeName 'System.Text.StringBuilder'
         [void]$ShouldProcess_Statement.AppendLine(('Add group members "{0}" to custom group: "{1}" (ID={2})' -f ($ResourceID -join ','), $Existing_Group.groupName, $GroupID))
