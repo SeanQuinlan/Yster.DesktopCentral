@@ -17,7 +17,7 @@ function Add-DCAPICustomGroupMember {
     .NOTES
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'GroupID')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'GroupIDResourceID')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -26,13 +26,15 @@ function Add-DCAPICustomGroupMember {
         $AuthToken,
 
         # The ID of the group to add members to.
-        [Parameter(Mandatory = $true, ParameterSetName = 'GroupID')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupIDResourceID')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupIDResourceName')]
         [ValidateNotNullOrEmpty()]
         [Int]
         $GroupID,
 
         # The name of the custom group.
-        [Parameter(Mandatory = $true, ParameterSetName = 'GroupName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupNameResourceID')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupNameResourceName')]
         [ValidateNotNullOrEmpty()]
         [String]
         $GroupName,
@@ -51,10 +53,18 @@ function Add-DCAPICustomGroupMember {
         $HostName,
 
         # The Resource ID or IDs that will be added to the group.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupIDResourceID')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupNameResourceID')]
         [ValidateNotNullOrEmpty()]
         [Int[]]
         $ResourceID,
+
+        # The Resource Name or Names that will be added to the group.
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupIDResourceName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'GroupNameResourceName')]
+        [ValidateNotNullOrEmpty()]
+        [String[]]
+        $ResourceName,
 
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
@@ -73,7 +83,34 @@ function Add-DCAPICustomGroupMember {
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
 
-        if ($PsCmdlet.ParameterSetName -eq 'GroupName') {
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            Write-Verbose ('{0}|Calling Get-DCAPIComputer' -f $Function_Name)
+            $All_Computers = Get-DCAPIComputer @Common_Parameters | Group-Object -Property 'computerName' -AsHashTable
+
+            $Failed_Resource = New-Object -TypeName System.Collections.Generic.List[String]
+            foreach ($Resource in $ResourceName) {
+                if ($All_Computers[$Resource]) {
+                    $ResourceID += $All_Computers[$Resource].computerID
+                } else {
+                    $Failed_Resource.Add($Resource)
+                }
+            }
+
+            if ($Failed_Resource) {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Exception'
+                    'ID'           = 'DC-ResourceNameNotFound'
+                    'Category'     = 'ObjectNotFound'
+                    'TargetObject' = $ResourceName
+                    'Message'      = 'Unable to find ID for resource: {0}' -f ($Failed_Resource -join ',')
+                }
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('GroupName')) {
+            Write-Verbose ('{0}|Calling Get-DCAPICustomGroup' -f $Function_Name)
             $Group_Lookup = Get-DCAPICustomGroup @Common_Parameters | Where-Object { $_.groupName -eq $GroupName }
             if (-not $Group_Lookup) {
                 $Terminating_ErrorRecord_Parameters = @{
@@ -92,7 +129,12 @@ function Add-DCAPICustomGroupMember {
         $New_GroupMembers = ($Existing_Group.groupMembers.resourceId -as [Int[]]) + $ResourceID
 
         $ShouldProcess_Statement = New-Object -TypeName 'System.Text.StringBuilder'
-        [void]$ShouldProcess_Statement.AppendLine(('Add group members "{0}" to custom group: "{1}" (ID={2})' -f ($ResourceID -join ','), $Existing_Group.groupName, $GroupID))
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            $Group_Members = $ResourceName -join ','
+        } else {
+            $Group_Members = $ResourceID -join ','
+        }
+        [void]$ShouldProcess_Statement.AppendLine(('Add group members "{0}" to custom group: "{1}" (ID={2})' -f $Group_Members, $Existing_Group.groupName, $GroupID))
 
         $Whatif_Statement = $ShouldProcess_Statement.ToString().Trim()
         $Confirm_Statement = ('Are you sure you want to perform this action?', $Whatif_Statement) -join [Environment]::NewLine
