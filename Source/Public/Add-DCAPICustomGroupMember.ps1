@@ -129,12 +129,18 @@ function Add-DCAPICustomGroupMember {
         $New_GroupMembers = ($Existing_Group.groupMembers.resourceId -as [Int[]]) + $ResourceID
 
         $ShouldProcess_Statement = New-Object -TypeName 'System.Text.StringBuilder'
-        if ($PSBoundParameters.ContainsKey('ResourceName')) {
-            $Group_Members = $ResourceName -join ','
-        } else {
-            $Group_Members = $ResourceID -join ','
+        [void]$ShouldProcess_Statement.Append('Add group member')
+        if ($ResourceID.Count -gt 1) {
+            [void]$ShouldProcess_Statement.Append('s')
         }
-        [void]$ShouldProcess_Statement.AppendLine(('Add group members "{0}" to custom group: "{1}" (ID={2})' -f $Group_Members, $Existing_Group.groupName, $GroupID))
+        [void]$ShouldProcess_Statement.Append(' "')
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            [void]$ShouldProcess_Statement.Append(($ResourceName -join ','))
+        } else {
+            [void]$ShouldProcess_Statement.Append(($ResourceID -join ','))
+        }
+        [void]$ShouldProcess_Statement.Append(('" to custom group: "{0}" (ID={1}' -f $Existing_Group.groupName, $GroupID))
+        [void]$ShouldProcess_Statement.AppendLine(')')
 
         $Whatif_Statement = $ShouldProcess_Statement.ToString().Trim()
         $Confirm_Statement = ('Are you sure you want to perform this action?', $Whatif_Statement) -join [Environment]::NewLine
