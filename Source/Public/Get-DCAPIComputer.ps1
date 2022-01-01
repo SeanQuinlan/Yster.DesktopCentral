@@ -4,7 +4,7 @@ function Get-DCAPIComputer {
         Gets the name, ID and domain for all computers, or some additional information if a resource ID is specified.
     .DESCRIPTION
         If no resource ID is given, this returns a list of all computers with only 3 properties: name, ID and domain.
-        If a resource ID is supplied, then the same information plus OS flavour, OS ID and live status.
+        If a resource ID is supplied, then the same information plus OS flavour, OS ID and live status is returned.
     .EXAMPLE
         Get-DCAPIComputer -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C'
 
