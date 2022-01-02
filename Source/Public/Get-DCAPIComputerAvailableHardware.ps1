@@ -11,7 +11,7 @@ function Get-DCAPIComputerAvailableHardware {
     .NOTES
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ResourceID')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -33,11 +33,17 @@ function Get-DCAPIComputerAvailableHardware {
         $HostName,
 
         # The Resource ID to return.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceID')]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
         $ResourceID,
+
+        # The Resource Name to return.
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceName')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $ResourceName,
 
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
@@ -50,16 +56,37 @@ function Get-DCAPIComputerAvailableHardware {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = 'dcapi/inventory/computers/{0}/availableHardware' -f $ResourceID
-        $Query_Parameters = @{
+        $Common_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
-            'APIPath'              = $API_Path
-            'Method'               = 'GET'
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
+
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            Write-Verbose ('{0}|Calling Get-DCAPIComputer' -f $Function_Name)
+            $Computer_Lookup = Get-DCAPIComputer @Common_Parameters | Group-Object -Property 'computerName' -AsHashTable
+
+            if (-not $Computer_Lookup[$ResourceName]) {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Exception'
+                    'ID'           = 'DC-ResourceNameNotFound'
+                    'Category'     = 'ObjectNotFound'
+                    'TargetObject' = $ResourceName
+                    'Message'      = 'Unable to find ID for resource: {0}' -f $ResourceName
+                }
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+            }
+            $ResourceID = $Computer_Lookup[$ResourceName].computerID
+        }
+
+        $API_Path = 'dcapi/inventory/computers/{0}/availableHardware' -f $ResourceID
+        $Query_Parameters = @{
+            'APIPath' = $API_Path
+            'Method'  = 'GET'
+        }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-        $Query_Return = Invoke-DCQuery @Query_Parameters
+        $Query_Return = Invoke-DCQuery @Common_Parameters @Query_Parameters
         $Query_Return
 
     } catch {

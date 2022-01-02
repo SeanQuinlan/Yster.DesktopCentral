@@ -3,7 +3,7 @@ function Get-DCAPIComputerCustomDetails {
     .SYNOPSIS
         Returns the custom details that have been configured for the computer.
     .DESCRIPTION
-        Returns a list of custom details for the specified resource ID, along with their values (if set).
+        Returns a list of custom details for the specified resource, along with their values (if set).
         The following custom details can be retrieved:
             - Computer Location
             - Search Tag
@@ -19,10 +19,14 @@ function Get-DCAPIComputerCustomDetails {
         Get-DCAPIComputerCustomDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
 
         Returns the custom details and their values for resource ID 101.
+    .EXAMPLE
+        Get-DCAPIComputerCustomDetails -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceName SRV1
+
+        Returns the custom details and their values for the server "SRV1".
     .NOTES
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ResourceID')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -44,11 +48,17 @@ function Get-DCAPIComputerCustomDetails {
         $HostName,
 
         # The Resource ID to return.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceID')]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
         $ResourceID,
+
+        # The Resource Name to return.
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceName')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $ResourceName,
 
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
@@ -61,16 +71,37 @@ function Get-DCAPIComputerCustomDetails {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $API_Path = 'dcapi/inventory/computers/{0}/customFields' -f $ResourceID
-        $Query_Parameters = @{
+        $Common_Parameters = @{
             'AuthToken'            = $AuthToken
             'HostName'             = $HostName
-            'APIPath'              = $API_Path
-            'Method'               = 'GET'
             'SkipCertificateCheck' = $SkipCertificateCheck
         }
+
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            Write-Verbose ('{0}|Calling Get-DCAPIComputer' -f $Function_Name)
+            $Computer_Lookup = Get-DCAPIComputer @Common_Parameters | Group-Object -Property 'computerName' -AsHashTable
+
+            if (-not $Computer_Lookup[$ResourceName]) {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Exception'
+                    'ID'           = 'DC-ResourceNameNotFound'
+                    'Category'     = 'ObjectNotFound'
+                    'TargetObject' = $ResourceName
+                    'Message'      = 'Unable to find ID for resource: {0}' -f $ResourceName
+                }
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+            }
+            $ResourceID = $Computer_Lookup[$ResourceName].computerID
+        }
+
+        $API_Path = 'dcapi/inventory/computers/{0}/customFields' -f $ResourceID
+        $Query_Parameters = @{
+            'APIPath' = $API_Path
+            'Method'  = 'GET'
+        }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-        $Query_Return = Invoke-DCQuery @Query_Parameters
+        $Query_Return = Invoke-DCQuery @Common_Parameters @Query_Parameters
         $Query_Return
 
     } catch {

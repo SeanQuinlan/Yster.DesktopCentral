@@ -3,7 +3,7 @@ function Get-DCAPIComputerSummary {
     .SYNOPSIS
         Gets all the summary information for the specified system, or only a specific type.
     .DESCRIPTION
-        Returns all the different summary information objects for the specified resource ID.
+        Returns all the different summary information objects for the specified resource ID/name.
         Alternatively, a more specific type can be provided: Asset, DiskUsage, General, Hardware or OS.
     .EXAMPLE
         Get-DCAPIComputerSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101
@@ -13,10 +13,14 @@ function Get-DCAPIComputerSummary {
         Get-DCAPIComputerSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceID 101 -Type OS
 
         Returns an object containing OS summary information for the resource ID 101.
+    .EXAMPLE
+        Get-DCAPIComputerSummary -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -ResourceName SRV1 -Type Hardware
+
+        Returns an object containing hardware summary information for the computer named "SRV1".
     .NOTES
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ResourceID')]
     param(
         # The AuthToken for the Desktop Central server API.
         [Parameter(Mandatory = $true)]
@@ -38,11 +42,17 @@ function Get-DCAPIComputerSummary {
         $HostName,
 
         # The Resource ID to return.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceID')]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [Int]
         $ResourceID,
+
+        # The Resource Name to return.
+        [Parameter(Mandatory = $true, ParameterSetName = 'ResourceName')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $ResourceName,
 
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
@@ -75,20 +85,41 @@ function Get-DCAPIComputerSummary {
     }
 
     try {
+        $Common_Parameters = @{
+            'AuthToken'            = $AuthToken
+            'HostName'             = $HostName
+            'SkipCertificateCheck' = $SkipCertificateCheck
+        }
+
+        if ($PSBoundParameters.ContainsKey('ResourceName')) {
+            Write-Verbose ('{0}|Calling Get-DCAPIComputer' -f $Function_Name)
+            $Computer_Lookup = Get-DCAPIComputer @Common_Parameters | Group-Object -Property 'computerName' -AsHashTable
+
+            if (-not $Computer_Lookup[$ResourceName]) {
+                $Terminating_ErrorRecord_Parameters = @{
+                    'Exception'    = 'System.Exception'
+                    'ID'           = 'DC-ResourceNameNotFound'
+                    'Category'     = 'ObjectNotFound'
+                    'TargetObject' = $ResourceName
+                    'Message'      = 'Unable to find ID for resource: {0}' -f $ResourceName
+                }
+                $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+            }
+            $ResourceID = $Computer_Lookup[$ResourceName].computerID
+        }
+
         if ($PSBoundParameters.ContainsKey('Type')) {
             $API_Path = 'dcapi/inventory/computers/{0}/{1}' -f $ResourceID, $SummaryType_Mapping[$Type]
         } else {
             $API_Path = 'dcapi/inventory/computers/{0}/summary' -f $ResourceID
         }
         $Query_Parameters = @{
-            'AuthToken'            = $AuthToken
-            'HostName'             = $HostName
-            'APIPath'              = $API_Path
-            'Method'               = 'GET'
-            'SkipCertificateCheck' = $SkipCertificateCheck
+            'APIPath' = $API_Path
+            'Method'  = 'GET'
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
-        $Query_Return = Invoke-DCQuery @Query_Parameters
+        $Query_Return = Invoke-DCQuery @Common_Parameters @Query_Parameters
         $Query_Return
 
     } catch {
