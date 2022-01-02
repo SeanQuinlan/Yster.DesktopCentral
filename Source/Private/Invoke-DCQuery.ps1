@@ -125,7 +125,7 @@ function Invoke-DCQuery {
 
             if ($NewAPI) {
                 # The new API (host:port/dcapi) returns the objects directly, rather than as a sub-property
-                Write-Verbose ('{0}|Response items returned: {1}' -f $Function_Name, $REST_Response.Count)
+                Write-Verbose ('{0}|Response items returned: {1}' -f $Function_Name, @($REST_Response).Count)
                 $Return_Object = $REST_Response
             } else {
                 Write-Verbose ('{0}|Response status: {1}' -f $Function_Name, $REST_Response.status)
