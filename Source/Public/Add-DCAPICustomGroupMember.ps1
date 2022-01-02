@@ -94,7 +94,7 @@ function Add-DCAPICustomGroupMember {
             $Failed_Resource = New-Object -TypeName System.Collections.Generic.List[String]
             foreach ($Resource in $ResourceName) {
                 if ($All_Computers[$Resource]) {
-                    $ResourceID += $All_Computers[$Resource].computerID
+                    $ResourceID += $All_Computers[$Resource].'computerID'
                 } else {
                     $Failed_Resource.Add($Resource)
                 }
