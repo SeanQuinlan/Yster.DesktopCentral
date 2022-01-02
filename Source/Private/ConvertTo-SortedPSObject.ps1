@@ -42,7 +42,7 @@ function ConvertTo-SortedPSObject {
         $Input_Object_Sorted = [Ordered]@{}
         $Input_Object_Properties | Sort-Object -Property 'Name' | ForEach-Object {
             # Sort any sub-objects if required.
-            if ((($_.Value -is [Array]) -and ($_.Value[0].GetType().Name -eq 'PSCustomObject')) -or ($_.Value.GetType().Name -eq 'Hashtable')) {
+            if ($_.Value -and ((($_.Value -is [Array]) -and ($_.Value[0].GetType().Name -eq 'PSCustomObject')) -or ($_.Value.GetType().Name -eq 'Hashtable'))) {
                 Write-Verbose ('{0}|Sorting sub-property: {1}' -f $Function_Name, $_.Name)
                 $Value = $_.Value | ConvertTo-SortedPSObject
             } else {
