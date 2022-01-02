@@ -14,6 +14,10 @@ function Add-DCAPICustomGroupMember {
         Add-DCAPICustomGroupMember -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupName "All Servers" -ResourceID 301
 
         Adds computer with ID 301 to the custom group "All Servers".
+    .EXAMPLE
+        Add-DCAPICustomGroupMember -HostName DCSERVER -AuthToken '47A1157A-7AAC-4660-XXXX-34858F3A001C' -GroupName "Windows Servers" -ResourceName SRV1,SRV2
+
+        Adds computers SRV1 and SRV2 to the custom group "Windows Servers".
     .NOTES
     #>
 
