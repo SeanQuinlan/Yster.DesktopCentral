@@ -6,11 +6,14 @@ SHORT DESCRIPTION
 
 LONG DESCRIPTION
     This module will allow interaction with most Desktop Central API endpoints.
-	
+
 	Data is returned as standard PowerShell objects.
-	
+
     Some API documentation is here:
         https://www.manageengine.com/products/desktop-central/api/index.html
 
 SEE ALSO
   - https://github.com/SeanQuinlan/Yster.DesktopCentral
+
+KEYWORDS
+    DesktopCentral
