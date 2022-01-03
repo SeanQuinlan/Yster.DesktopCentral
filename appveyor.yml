@@ -16,6 +16,6 @@ build_script:
       Compress-Archive -Path ".\bin\$Env:APPVEYOR_PROJECT_NAME" -DestinationPath ".\$Env:APPVEYOR_PROJECT_NAME.zip"
       Push-AppveyorArtifact ".\$Env:APPVEYOR_PROJECT_NAME.zip"
 
-#environment:
-#  NugetApiKey:
-#    secure: SYfPel8xbp/wq5ZKzXcvSe8FjsFSwkqOwUP4sykB/FZYSgUyoeLFmcD0ngR+6DkG
+environment:
+  NugetApiKey:
+    secure: SYfPel8xbp/wq5ZKzXcvSe8FjsFSwkqOwUP4sykB/FZYSgUyoeLFmcD0ngR+6DkG
