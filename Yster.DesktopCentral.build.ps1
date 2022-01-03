@@ -33,7 +33,7 @@ task TestCode {
         Write-Warning -Message "Failing Tests:"
         $TestResult.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
             Write-Verbose -Message $_.Name -Verbose
-            Write-Verbose -Message $_.ErrorRecord.Exception.Message -Verbose
+            Write-Verbose -Message $_.ErrorRecord -Verbose
         }
         throw 'Tests failed'
     }
