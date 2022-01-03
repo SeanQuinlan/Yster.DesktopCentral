@@ -27,7 +27,14 @@ task TestCode {
     $PesterConfiguration.Run.PassThru = $true
     $PesterConfiguration.Filter.Tag = 'Unit'
     $TestResult = Invoke-Pester -Configuration $PesterConfiguration
-    if ($TestResult.FailedCount -gt 0) {throw 'Tests failed'}
+    if ($TestResult.FailedCount -gt 0) {
+        Write-Warning -Message "Failing Tests:"
+        $TestResult.TestResult.Where{$_.Result -eq 'Failed'} | ForEach-Object -Process {
+            Write-Warning -Message $_.Name
+            Write-Verbose -Message $_.FailureMessage -Verbose
+        }
+        throw 'Tests failed'
+    }
 }
 
 task CompilePSM {
