@@ -21,17 +21,19 @@ task Clean {
 
 task TestCode {
     Write-Build Yellow "`n`nTesting dev code before build"
+
     $PesterConfiguration = New-PesterConfiguration
     $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
     $PesterConfiguration.Output.Verbosity = 'None'
     $PesterConfiguration.Run.PassThru = $true
     $PesterConfiguration.Filter.Tag = 'Unit'
+
     $TestResult = Invoke-Pester -Configuration $PesterConfiguration
     if ($TestResult.FailedCount -gt 0) {
         Write-Warning -Message "Failing Tests:"
-        $TestResult.TestResult.Where{$_.Result -eq 'Failed'} | ForEach-Object -Process {
-            Write-Warning -Message $_.Name
-            Write-Verbose -Message $_.FailureMessage -Verbose
+        $TestResult.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
+            Write-Verbose -Message $_.Name -Verbose
+            Write-Verbose -Message $_.ErrorRecord.DisplayErrorMessage -Verbose
         }
         throw 'Tests failed'
     }
@@ -54,17 +56,18 @@ task MakeHelp -if (Test-Path -Path "$PSScriptRoot\Docs") {
 
 task TestBuild {
     Write-Build Yellow "`n`nTesting compiled module"
+
     $PesterConfiguration = New-PesterConfiguration
     $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
     $PesterConfiguration.Output.Verbosity = 'None'
     $PesterConfiguration.Run.PassThru = $true
-    $TestResult = Invoke-Pester -Configuration $PesterConfiguration
 
+    $TestResult = Invoke-Pester -Configuration $PesterConfiguration
     if ($TestResult.FailedCount -gt 0) {
         Write-Warning -Message "Failing Tests:"
-        $TestResult.TestResult.Where{$_.Result -eq 'Failed'} | ForEach-Object -Process {
-            Write-Warning -Message $_.Name
-            Write-Verbose -Message $_.FailureMessage -Verbose
+        $TestResult.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
+            Write-Verbose -Message $_.Name -Verbose
+            Write-Verbose -Message $_.ErrorRecord.DisplayErrorMessage -Verbose
         }
         throw 'Tests failed'
     }
