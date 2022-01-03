@@ -1,4 +1,4 @@
-$Current_TimeZone = (Get-WmiObject -ClassName Win32_TimeZone).StandardName
+$Current_TimeZone = (Get-CimInstance -ClassName Win32_TimeZone).StandardName
 $TimeZone_Info = [System.TimeZoneInfo]::FindSystemTimeZoneById($Current_TimeZone)
 
 $Patch_Status_Mapping = @{
