@@ -1,7 +1,15 @@
-#Requires -Modules @{ModuleName='InvokeBuild';ModuleVersion='3.2.1'}
-#Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='1.6.0'}
-#Requires -Modules @{ModuleName='Pester';ModuleVersion='4.1.1'}
-#Requires -Modules @{ModuleName='ModuleBuilder';ModuleVersion='1.0.0'}
+#Requires -Modules @{ModuleName='InvokeBuild';ModuleVersion='5.8.8'}
+#Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.5'}
+#Requires -Modules @{ModuleName='Pester';ModuleVersion='5.3.1'}
+#Requires -Modules @{ModuleName='ModuleBuilder';ModuleVersion='2.0.0'}
+
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $false)]
+    [ValidateSet('Development', 'Release')]
+    [string]
+    $Configuration = 'Development'
+)
 
 $Script:IsAppveyor = $null -ne $env:APPVEYOR
 $Script:ModuleName = Get-Item -Path $BuildRoot | Select-Object -ExpandProperty Name
@@ -12,30 +20,21 @@ task Clean {
 }
 
 task TestCode {
-    Write-Build Yellow "`n`n`nTesting dev code before build"
-    # Fixes for Pester v5
+    Write-Build Yellow "`n`nTesting dev code before build"
     $PesterConfiguration = New-PesterConfiguration
-    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit" # -Script "$PSScriptRoot\Test\Unit"
-    $PesterConfiguration.Output.Verbosity = 'None' # -Show 'Header', 'Summary'
-    $PesterConfiguration.Run.PassThru = $true # -PassThru
-    $PesterConfiguration.Filter.Tag = 'Unit' # -Tag Unit
-    #$TestResult = Invoke-Pester -Script "$PSScriptRoot\Test\Unit" -Show 'Header', 'Summary' -Tag Unit -PassThru
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
+    $PesterConfiguration.Output.Verbosity = 'None'
+    $PesterConfiguration.Run.PassThru = $true
+    $PesterConfiguration.Filter.Tag = 'Unit'
     $TestResult = Invoke-Pester -Configuration $PesterConfiguration
     if ($TestResult.FailedCount -gt 0) {throw 'Tests failed'}
 }
 
 task CompilePSM {
-    Write-Build Yellow "`n`n`nCompiling all code into single psm1"
-    try {
-        $BuildParams = @{}
-        if ((Get-Command -ErrorAction stop -Name gitversion)) {
-            $GitVersion = gitversion | ConvertFrom-Json | Select-Object -Expand FullSemVer
-            $GitVersion = gitversion | ConvertFrom-Json | Select-Object -Expand InformationalVersion
-            $BuildParams['SemVer'] = $GitVersion
-        }
-    } catch {
-        Write-Warning -Message 'gitversion not found, keeping current version'
-    }
+    Write-Build Yellow "`n`nCompiling all code into single psm1"
+    $BuildParams = @{}
+    $ModuleDefinition = Import-PowerShellDataFile -Path "$BuildRoot\Source\*.psd1"
+    $BuildParams['SemVer'] = $ModuleDefinition.ModuleVersion
     Push-Location -Path "$BuildRoot\Source" -StackName 'InvokeBuildTask'
     $Script:CompileResult = Build-Module @BuildParams -Passthru
     Get-ChildItem -Path "$BuildRoot\license*" | Copy-Item -Destination $Script:CompileResult.ModuleBase
@@ -47,18 +46,11 @@ task MakeHelp -if (Test-Path -Path "$PSScriptRoot\Docs") {
 }
 
 task TestBuild {
-    Write-Build Yellow "`n`n`nTesting compiled module"
-    # $Script = @{Path = "$PSScriptRoot\test\Unit"; Parameters = @{ModulePath = $Script:CompileResult.ModuleBase}}
-    # $Script = "$PSScriptRoot\Test\Unit"
-    $CodeCoverage = (Get-ChildItem -Path $Script:CompileResult.ModuleBase -Filter *.psm1).FullName
-    # Fixes for Pester v5
+    Write-Build Yellow "`n`nTesting compiled module"
     $PesterConfiguration = New-PesterConfiguration
-    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit" # -Script $Script
-    $PesterConfiguration.CodeCoverage.Enabled = $true # -CodeCoverage $CodeCoverage
-    $PesterConfiguration.CodeCoverage.Path = $CodeCoverage
-    $PesterConfiguration.Output.Verbosity = 'None' # -Show None
-    $PesterConfiguration.Run.PassThru = $true # -PassThru
-    #$TestResult = Invoke-Pester -Script $Script -CodeCoverage $CodeCoverage -Show None -PassThru
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
+    $PesterConfiguration.Output.Verbosity = 'None'
+    $PesterConfiguration.Run.PassThru = $true
     $TestResult = Invoke-Pester -Configuration $PesterConfiguration
 
     if ($TestResult.FailedCount -gt 0) {
@@ -69,16 +61,23 @@ task TestBuild {
         }
         throw 'Tests failed'
     }
+}
 
-    # Fix for Pester v5 outputting a different object property
-    $TestResultConverted = [pscustomobject]@{'CodeCoverage' = [pscustomobject]@{ 'MissedCommands' = $TestResult.CodeCoverage.CommandsMissed }}
-    $CodeCoverageResult = $TestResultConverted | Convert-CodeCoverage -SourceRoot "$PSScriptRoot\Source"
-    # $CodeCoveragePercent = $TestResult.CodeCoverage.NumberOfCommandsExecuted / $TestResult.CodeCoverage.NumberOfCommandsAnalyzed * 100 -as [int]
-    $CodeCoveragePercent = $TestResult.CodeCoverage.CommandsExecutedCount / $TestResult.CodeCoverage.CommandsAnalyzedCount * 100 -as [int]
-    Write-Verbose -Message "CodeCoverage is $CodeCoveragePercent%" -Verbose
-    $CodeCoverageResult | Group-Object -Property SourceFile | Sort-Object -Property Count | Select-Object -Property Count, Name -Last 10
+task PublishModule -if ($Configuration -eq 'Release') {
+    Write-Build Yellow "`n`nPublishing module to PSGallery"
+    try {
+        $Parameters = @{
+            Path        = $Script:CompileResult.ModuleBase
+            NuGetApiKey = $env:NugetApiKey
+            ErrorAction = 'Stop'
+            Verbose     = $true
+        }
+        Publish-Module @Parameters
+    } catch {
+        throw $_
+    }
 }
 
 task . Clean, TestCode, Build
 
-task Build CompilePSM, MakeHelp, TestBuild
+task Build CompilePSM, MakeHelp, TestBuild, PublishModule
