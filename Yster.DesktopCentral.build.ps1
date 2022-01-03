@@ -23,7 +23,7 @@ task TestCode {
     Write-Build Yellow "`n`nTesting dev code before build"
 
     $PesterConfiguration = New-PesterConfiguration
-    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit"
     $PesterConfiguration.Output.Verbosity = 'None'
     $PesterConfiguration.Run.PassThru = $true
     $PesterConfiguration.Filter.Tag = 'Unit'
@@ -33,7 +33,6 @@ task TestCode {
         Write-Warning -Message "Failing Tests:"
         $TestResult.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
             Write-Verbose -Message $_.Name -Verbose
-            Write-Verbose -Message $_.ErrorRecord -Verbose
         }
         throw 'Tests failed'
     }
@@ -58,7 +57,7 @@ task TestBuild {
     Write-Build Yellow "`n`nTesting compiled module"
 
     $PesterConfiguration = New-PesterConfiguration
-    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test"
+    $PesterConfiguration.Run.Path = "$PSScriptRoot\Test\Unit"
     $PesterConfiguration.Output.Verbosity = 'None'
     $PesterConfiguration.Run.PassThru = $true
 
@@ -67,7 +66,6 @@ task TestBuild {
         Write-Warning -Message "Failing Tests:"
         $TestResult.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
             Write-Verbose -Message $_.Name -Verbose
-            Write-Verbose -Message $_.ErrorRecord.Exception.Message -Verbose
         }
         throw 'Tests failed'
     }
