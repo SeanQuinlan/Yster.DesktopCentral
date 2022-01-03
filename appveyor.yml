@@ -12,7 +12,7 @@ install:
 build_script:
   - ps: |
       $ErrorActionPreference = 'Stop'
-      Invoke-Build
+      Invoke-Build -Configuration 'Release'
       Compress-Archive -Path ".\bin\$Env:APPVEYOR_PROJECT_NAME" -DestinationPath ".\$Env:APPVEYOR_PROJECT_NAME.zip"
       Push-AppveyorArtifact ".\$Env:APPVEYOR_PROJECT_NAME.zip"
 
