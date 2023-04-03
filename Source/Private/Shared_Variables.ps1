@@ -92,8 +92,9 @@ $CollectionStatus_Mapping = @{
     'Suspended' = 5
 }
 
-# From: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error/55246366
-$TrustAllCertsPolicy = @"
+if ($PSEdition -ne 'Core') {
+    # From: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error/55246366
+    $TrustAllCertsPolicy = @"
     using System.Net;
     using System.Security.Cryptography.X509Certificates;
     public class TrustAllCertsPolicy : ICertificatePolicy {
@@ -104,4 +105,5 @@ $TrustAllCertsPolicy = @"
         }
     }
 "@
-Add-Type -TypeDefinition $TrustAllCertsPolicy
+    Add-Type -TypeDefinition $TrustAllCertsPolicy
+}

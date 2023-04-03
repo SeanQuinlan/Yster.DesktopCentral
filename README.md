@@ -83,7 +83,7 @@ auth_data                                          two_factor_data              
 Once you have your API key, the simplest method is to declare a parameter block at the top of the script with your server name and API key, then use that parameter block for all cmdlet calls.
 
 ```powershell
-@DCParameters = @{
+$DCParameters = @{
     AuthToken = '47A1157A-7AAC-4660-XXXX-34858F3A001C'
     HostName  = 'deskcent01.contoso.com'
 }

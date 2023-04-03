@@ -113,14 +113,19 @@ function Invoke-DCQuery {
         }
 
         try {
-            if ($SkipCertificateCheck) {
-                Write-Verbose ('{0}|Disabling SSL check' -f $Function_Name)
-                $SavedCertificatePolicy = [System.Net.ServicePointManager]::CertificatePolicy
-                [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
-            }
-            $global:REST_Response = Invoke-RestMethod @API_Parameters
-            if ($SavedCertificatePolicy) {
-                [System.Net.ServicePointManager]::CertificatePolicy = $SavedCertificatePolicy
+            if ($PSEdition -eq 'Core') {
+                $API_Parameters['SkipCertificateCheck'] = $SkipCertificateCheck
+                $global:REST_Response = Invoke-RestMethod @API_Parameters
+            } else {
+                if ($SkipCertificateCheck) {
+                    Write-Verbose ('{0}|Disabling SSL check' -f $Function_Name)
+                    $SavedCertificatePolicy = [System.Net.ServicePointManager]::CertificatePolicy
+                    [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+                }
+                $global:REST_Response = Invoke-RestMethod @API_Parameters
+                if ($SavedCertificatePolicy) {
+                    [System.Net.ServicePointManager]::CertificatePolicy = $SavedCertificatePolicy
+                }
             }
 
             if ($NewAPI) {
@@ -149,14 +154,20 @@ function Invoke-DCQuery {
                 }
             }
             $Return_Object | Add-CalculatedProperty | ConvertTo-SortedPSObject
-        } catch [System.Net.WebException] {
+        } catch {
             if ($_.ErrorDetails.Message) {
+                if ($PSEdition -eq 'Core') {
+                    $ErrorType = $_.Exception.GetType().BaseType.FullName
+                } else {
+                    $ErrorType = $_.Exception.GetType().FullName
+                }
+
                 $global:InnerException = $_
                 $Returned_ErrorDetails = $InnerException.ErrorDetails.Message | ConvertFrom-Json
                 switch -Wildcard ($InnerException.Exception.Message) {
                     'The remote server returned an error: (401) Unauthorized*' {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'      = 'System.Net.WebException'
+                            'Exception'      = $ErrorType
                             'ID'             = 'DC-Unauthorized-{0}' -f $Returned_ErrorDetails.ErrorCode
                             'Category'       = 'SecurityError'
                             'TargetObject'   = $API_Uri
@@ -168,7 +179,7 @@ function Invoke-DCQuery {
                     }
                     'The remote name could not be resolved*' {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'      = 'System.Net.WebException'
+                            'Exception'      = $ErrorType
                             'ID'             = 'DC-NameResolutionFailure'
                             'Category'       = 'ResourceUnavailable'
                             'TargetObject'   = $API_Uri
@@ -181,7 +192,7 @@ function Invoke-DCQuery {
                     # When trying to set a custom group and providing only invalid resource IDs, the resulting JSON doesn't contain ErrorCode and ErrorMsg properties.
                     'The remote server returned an error: (412)*' {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'      = 'System.Net.WebException'
+                            'Exception'      = $ErrorType
                             'ID'             = 'DC-HTTP-Error-{0}' -f $InnerException.Exception.Response.StatusDescription
                             'Category'       = 'InvalidResult'
                             'TargetObject'   = $API_Uri
@@ -193,7 +204,7 @@ function Invoke-DCQuery {
                     }
                     default {
                         $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'      = 'System.Net.WebException'
+                            'Exception'      = $ErrorType
                             'ID'             = 'DC-REST-Error-{0}' -f $Returned_ErrorDetails.ErrorCode
                             'Category'       = 'InvalidResult'
                             'TargetObject'   = $API_Uri
@@ -206,7 +217,7 @@ function Invoke-DCQuery {
                 }
             } else {
                 $Terminating_ErrorRecord_Parameters = @{
-                    'Exception'      = 'System.Net.WebException'
+                    'Exception'      = $ErrorType
                     'ID'             = 'DC-ConnectionError'
                     'Category'       = 'InvalidResult'
                     'TargetObject'   = $API_Uri

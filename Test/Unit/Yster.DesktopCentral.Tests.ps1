@@ -89,7 +89,7 @@ Describe 'Function Validation for: <FunctionName>' -Tags @('Module', 'Unit') -Fo
     }
 
     Context 'Required Parameters' {
-        It ('<FunctionName> has required parameter: <ParameterName>') -ForEach $Common_Required_Parameters {
+        It ('<FunctionName> has required parameter: <ParameterName>') -Foreach $Common_Required_Parameters {
             if (($ParameterName -eq 'AuthToken') -and ($Non_AuthToken_Functions -contains $FunctionName)) {
                 $Required_Parameter_Check = $Function_AST.ParamBlock.Parameters | Where-Object { $_.Name.Extent.Text -eq ('${0}' -f $ParameterName) }
                 $Required_Parameter_Check | Should -BeNullOrEmpty
@@ -104,7 +104,7 @@ Describe 'Function Validation for: <FunctionName>' -Tags @('Module', 'Unit') -Fo
     }
 
     Context 'Optional Parameters' {
-        It ('<FunctionName> has required parameter: <ParameterName>') -ForEach $Common_Optional_Parameters {
+        It ('<FunctionName> has optional parameter: <ParameterName>') -Foreach $Common_Optional_Parameters {
             $Optional_Parameter_Check = $Function_AST.ParamBlock.Parameters | Where-Object { $_.Name.Extent.Text -eq ('${0}' -f $ParameterName) }
             $Optional_Parameter_Check | Should -Not -BeNullOrEmpty
         }
