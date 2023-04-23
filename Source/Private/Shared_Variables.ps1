@@ -1,6 +1,7 @@
 $Current_TimeZone = (Get-CimInstance -ClassName Win32_TimeZone).StandardName
 $TimeZone_Info = [System.TimeZoneInfo]::FindSystemTimeZoneById($Current_TimeZone)
 
+
 $Patch_Status_Mapping = @{
     'Installed' = 201
     'Missing'   = 202
