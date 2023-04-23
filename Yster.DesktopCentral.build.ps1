@@ -80,7 +80,8 @@ task PublishModule -if ($Configuration -eq 'Release') {
             ErrorAction = 'Stop'
             Verbose     = $true
         }
-        Publish-Module @Parameters
+        $Parameters
+        # Publish-Module @Parameters
     } catch {
         throw $_
     }
