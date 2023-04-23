@@ -42,7 +42,7 @@ All cmdlets will require an API key for access. You can obtain this API key via 
 ### Web Interface
 
 * Log into the Desktop Central Server.
-* Go to **Admin - API Explorer**.
+* Go to **Admin - Integrations - API Explorer**.
 * Under **Authentication - Login**, enter your username and password.
 * If prompted, enter your **OTP**.
 * Look for your API key in the output pane:
