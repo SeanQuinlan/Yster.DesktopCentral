@@ -135,6 +135,21 @@ function Get-DCAPIToken {
                 }
                 Write-Verbose ('{0}|Calling Invoke-DCQuery for OTP' -f $Function_Name)
                 $Query_Return = Invoke-DCQuery @OTP_Query_Parameters
+            } else {
+                $OTP = Read-Host -Prompt "Enter the OTP Code snet to your email"
+                $OTP_Query_URL = 'desktop/authentication/otpValidate'
+                $OTP_Query_Body = @{
+                    'uid' = $Query_Return.two_factor_data.unique_userID
+                    'otp' = "$OTP"
+                }
+                $OTP_Query_Parameters = @{
+                    'HostName' = $HostName
+                    'APIPath'  = $OTP_Query_URL
+                    'Method'   = 'POST'
+                    'Body'     = $OTP_Query_Body
+                }
+                Write-Verbose ('{0}|Calling Invoke-DCQuery for OTP' -f $Function_Name)
+                $Query_Return = Invoke-DCQuery @OTP_Query_Parameters
             }
         }
 
@@ -149,3 +164,4 @@ function Get-DCAPIToken {
         }
     }
 }
+
