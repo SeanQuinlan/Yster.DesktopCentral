@@ -14,7 +14,7 @@ build_script:
       $ErrorActionPreference = 'Stop'
       Write-Host "branch = $env:APPVEYOR_REPO_BRANCH"
       Write-Host "PR source branch = $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH"
-      if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
+      if (($env:APPVEYOR_REPO_BRANCH -eq 'master') -and (-not $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH)) {
         Invoke-Build -Configuration 'Release'
       } else {
         Invoke-Build -Configuration 'Development'
