@@ -1,6 +1,6 @@
 # Custom Appveyor settings
 
-image: Visual Studio 2019
+image: Visual Studio 2017
 
 matrix:
   # immediately finish build on failure
@@ -12,7 +12,11 @@ install:
 build_script:
   - ps: |
       $ErrorActionPreference = 'Stop'
-      Invoke-Build -Configuration 'Release'
+      if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
+        Invoke-Build -Configuration 'Release'
+      } else {
+        Invoke-Build -Configuration 'Development'
+      }
       Compress-Archive -Path ".\bin\$Env:APPVEYOR_PROJECT_NAME" -DestinationPath ".\$Env:APPVEYOR_PROJECT_NAME.zip"
       Push-AppveyorArtifact ".\$Env:APPVEYOR_PROJECT_NAME.zip"
 
