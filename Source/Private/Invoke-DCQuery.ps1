@@ -202,6 +202,18 @@ function Invoke-DCQuery {
                         $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                         $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
                     }
+                    'The remote server returned an error: (500) Internal Server Error*' {
+                        $Terminating_ErrorRecord_Parameters = @{
+                            'Exception'      = $ErrorType
+                            'ID'             = 'DC-HTTP-Error-{0}' -f $InnerException.Exception.Response.StatusDescription
+                            'Category'       = 'InvalidResult'
+                            'TargetObject'   = $API_Uri
+                            'Message'        = $InnerException.Exception.Message
+                            'InnerException' = $InnerException.Exception
+                        }
+                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                    }
                     default {
                         $Terminating_ErrorRecord_Parameters = @{
                             'Exception'      = $ErrorType
