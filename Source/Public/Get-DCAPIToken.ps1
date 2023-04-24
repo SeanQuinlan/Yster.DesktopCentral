@@ -109,34 +109,16 @@ function Get-DCAPIToken {
                 }
                 $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
                 $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-            } elseif ($Query_Return.two_factor_data.message -eq 'Google authentication already created for this user. Validate OTP') {
+            } elseif ($Query_Return.two_factor_data.message -match 'Google authentication already created for this user\. Validate OTP|Mail has been sent to the mail address') {
                 if (-not $OTP) {
-                    $Terminating_ErrorRecord_Parameters = @{
-                        'Exception'    = 'System.ArgumentException'
-                        'ID'           = 'DC-OTPNotProvided'
-                        'Category'     = 'AuthenticationError'
-                        'TargetObject' = $Query_URL
-                        'Message'      = 'OTP required by server but not provided'
+                    if ($Query_Return.two_factor_data.message -match 'Google authentication already created for this user\. Validate OTP') {
+                        $OTP_Prompt = 'Enter OTP code from Google Authenticator'
+                    } elseif ($Query_Return.two_factor_data.message -match 'Mail has been sent to the mail address') {
+                        $OTP_Prompt = 'Enter OTP code sent via email'
                     }
-                    $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                    $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                    $OTP = Read-Host -Prompt $OTP_Prompt
                 }
 
-                $OTP_Query_URL = 'desktop/authentication/otpValidate'
-                $OTP_Query_Body = @{
-                    'uid' = $Query_Return.two_factor_data.unique_userID
-                    'otp' = "$OTP"
-                }
-                $OTP_Query_Parameters = @{
-                    'HostName' = $HostName
-                    'APIPath'  = $OTP_Query_URL
-                    'Method'   = 'POST'
-                    'Body'     = $OTP_Query_Body
-                }
-                Write-Verbose ('{0}|Calling Invoke-DCQuery for OTP' -f $Function_Name)
-                $Query_Return = Invoke-DCQuery @OTP_Query_Parameters
-            } else {
-                $OTP = Read-Host -Prompt "Enter the OTP Code snet to your email"
                 $OTP_Query_URL = 'desktop/authentication/otpValidate'
                 $OTP_Query_Body = @{
                     'uid' = $Query_Return.two_factor_data.unique_userID
@@ -164,4 +146,3 @@ function Get-DCAPIToken {
         }
     }
 }
-
