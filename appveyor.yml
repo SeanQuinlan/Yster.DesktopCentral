@@ -12,7 +12,8 @@ install:
 build_script:
   - ps: |
       $ErrorActionPreference = 'Stop'
-      Write-Host $env:APPVEYOR_REPO_BRANCH
+      Write-Host "branch = $env:APPVEYOR_REPO_BRANCH"
+      Write-Host "PR source branch = $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH"
       if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
         Invoke-Build -Configuration 'Release'
       } else {
