@@ -23,5 +23,5 @@ build_script:
       Push-AppveyorArtifact ".\$Env:APPVEYOR_PROJECT_NAME.zip"
 
 environment:
-  my_variable:
+  NugetApiKey:
     secure: bPXKlnlPiO0CVtFP06Y0UoFTfiRTX5ZeGGXVW6iM8b2WuBI0mipXdsZmHpy+c49z
