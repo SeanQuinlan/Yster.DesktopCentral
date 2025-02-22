@@ -63,6 +63,12 @@ function Invoke-DCQuery {
         [String]
         $Method,
 
+        # The number of results that are returned.
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Int]
+        $ResultSize,
+
         # Whether to skip the SSL certificate check.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -92,11 +98,10 @@ function Invoke-DCQuery {
             $API_Uri = '{0}:{1}/{2}' -f $HostName, $Port, $APIPath
             $NewAPI = $true
         } else {
-            $API_Uri = '{0}:{1}/api/1.3/{2}' -f $HostName, $Port, $APIPath
+            $API_Uri = '{0}:{1}/api/1.4/{2}' -f $HostName, $Port, $APIPath
         }
 
-        $global:API_Parameters = @{
-            'Uri'         = $API_Uri
+        $API_Parameters = @{
             'Method'      = $Method
             'ContentType' = $ContentType
         }
@@ -113,46 +118,83 @@ function Invoke-DCQuery {
         }
 
         try {
-            if ($PSEdition -eq 'Core') {
-                $API_Parameters['SkipCertificateCheck'] = $SkipCertificateCheck
-                $global:REST_Response = Invoke-RestMethod @API_Parameters
-            } else {
-                if ($SkipCertificateCheck) {
-                    Write-Verbose ('{0}|Disabling SSL check' -f $Function_Name)
-                    $SavedCertificatePolicy = [System.Net.ServicePointManager]::CertificatePolicy
-                    [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+            $Return_Object = New-Object -TypeName 'System.Collections.Generic.List[Object]'
+            $Page = 1
+            $Results_To_Return = $ResultSize
+            $Results_Gathered = 0
+            $All_Results_Returned = $false
+
+            while (-not $All_Results_Returned) {
+                if (($ResultSize -eq 0) -or ($ResultSize -gt $Max_Query_Results)) {
+                    $Current_Limit = $Max_Query_Results
+                } else {
+                    $Current_Limit = $ResultSize
                 }
-                $global:REST_Response = Invoke-RestMethod @API_Parameters
-                if ($SavedCertificatePolicy) {
-                    [System.Net.ServicePointManager]::CertificatePolicy = $SavedCertificatePolicy
+
+                if (-not $NewAPI) {
+                    if ($API_Uri -match '\?') {
+                        $Initial_Character = '&'
+                    } else {
+                        $Initial_Character = '?'
+                    }
+                    $API_Parameters['Uri'] = '{0}{1}page={2}&pagelimit={3}' -f $API_Uri, $Initial_Character, $Page, $Current_Limit
+                } else {
+                    $API_Parameters['Uri'] = $API_Uri
                 }
+                Write-Verbose ('{0}|Uri: {1}' -f $Function_Name, $API_Parameters['Uri'])
+
+                if ($PSEdition -eq 'Core') {
+                    $API_Parameters['SkipCertificateCheck'] = $SkipCertificateCheck
+                    $REST_Response = Invoke-RestMethod @API_Parameters
+                } else {
+                    if ($SkipCertificateCheck) {
+                        Write-Verbose ('{0}|Disabling SSL check' -f $Function_Name)
+                        $SavedCertificatePolicy = [System.Net.ServicePointManager]::CertificatePolicy
+                        [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+                    }
+                    $REST_Response = Invoke-RestMethod @API_Parameters
+                    if ($SavedCertificatePolicy) {
+                        [System.Net.ServicePointManager]::CertificatePolicy = $SavedCertificatePolicy
+                    }
+                }
+
+                if ($NewAPI) {
+                    # The new API (host:port/dcapi) returns the objects directly, rather than as a sub-property
+                    Write-Verbose ('{0}|Response items returned: {1}' -f $Function_Name, @($REST_Response).Count)
+                    $Return_Object = $REST_Response
+                    $All_Results_Returned = $true
+                } else {
+                    Write-Verbose ('{0}|Response status [Page {1}]: {2}' -f $Function_Name, $Page, $REST_Response.status)
+                    switch ($REST_Response.status) {
+                        'error' {
+                            $Terminating_ErrorRecord_Parameters = @{
+                                'Exception'    = 'System.InvalidOperationException'
+                                'ID'           = 'DC-REST-Error-{0}' -f $REST_Response.error_code
+                                'Category'     = 'InvalidResult'
+                                'TargetObject' = $API_Uri
+                                'Message'      = $REST_Response.error_description
+                            }
+                            $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
+                            $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
+                        }
+                        'success' {
+                            if ($Results_To_Return -eq 0) {
+                                $Results_To_Return = $REST_Response.message_response.total
+                            }
+                            $Message_Type = $REST_Response.message_type
+                            # Return the relevant message_response child object
+                            $Return_Object.AddRange(@($REST_Response.message_response.$Message_Type))
+                            $Results_Gathered = $Results_Gathered + $REST_Response.message_response.$Message_Type.Count
+                            # If zero responses are returned, then there's no more to get
+                            if (($Results_Gathered -ge $Results_To_Return) -or ($REST_Response.message_response.total -eq 0)) {
+                                $All_Results_Returned = $true
+                            }
+                        }
+                    }
+                }
+                $Page++
             }
 
-            if ($NewAPI) {
-                # The new API (host:port/dcapi) returns the objects directly, rather than as a sub-property
-                Write-Verbose ('{0}|Response items returned: {1}' -f $Function_Name, @($REST_Response).Count)
-                $Return_Object = $REST_Response
-            } else {
-                Write-Verbose ('{0}|Response status: {1}' -f $Function_Name, $REST_Response.status)
-                switch ($REST_Response.status) {
-                    'error' {
-                        $Terminating_ErrorRecord_Parameters = @{
-                            'Exception'    = 'System.InvalidOperationException'
-                            'ID'           = 'DC-REST-Error-{0}' -f $REST_Response.error_code
-                            'Category'     = 'InvalidResult'
-                            'TargetObject' = $API_Uri
-                            'Message'      = $REST_Response.error_description
-                        }
-                        $Terminating_ErrorRecord = New-ErrorRecord @Terminating_ErrorRecord_Parameters
-                        $PSCmdlet.ThrowTerminatingError($Terminating_ErrorRecord)
-                    }
-                    'success' {
-                        $Message_Type = $REST_Response.message_type
-                        # Return the relevant message_response child object
-                        $Return_Object = $REST_Response.message_response.$Message_Type
-                    }
-                }
-            }
             $Return_Object | Add-CalculatedProperty | ConvertTo-SortedPSObject
         } catch {
             if ($_.ErrorDetails.Message) {
@@ -162,7 +204,7 @@ function Invoke-DCQuery {
                     $ErrorType = $_.Exception.GetType().FullName
                 }
 
-                $global:InnerException = $_
+                $InnerException = $_
                 $Returned_ErrorDetails = $InnerException.ErrorDetails.Message | ConvertFrom-Json
                 switch -Wildcard ($InnerException.Exception.Message) {
                     'The remote server returned an error: (401) Unauthorized*' {

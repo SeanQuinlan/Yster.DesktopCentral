@@ -107,3 +107,6 @@ if ($PSEdition -ne 'Core') {
 "@
     Add-Type -TypeDefinition $TrustAllCertsPolicy
 }
+
+# Maximum number of results that the API can return
+$Max_Query_Results = 1000

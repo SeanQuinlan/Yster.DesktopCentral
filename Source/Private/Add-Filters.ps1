@@ -90,9 +90,6 @@ function Add-Filters {
     if ($BoundParameters.ContainsKey('OSCompatibility')) {
         $Filters.Add('oscompatibilityfilter={0}' -f $OSCompatibility)
     }
-    if ($BoundParameters.ContainsKey('Page')) {
-        $Filters.Add('page={0}' -f $BoundParameters['Page'])
-    }
     if ($BoundParameters.ContainsKey('PatchID')) {
         $Filters.Add('patchid={0}' -f $BoundParameters['PatchID'])
     }
@@ -107,9 +104,6 @@ function Add-Filters {
     }
     if ($BoundParameters.ContainsKey('ResourceIDFilter')) {
         $Filters.Add('residfilter={0}' -f $BoundParameters['ResourceIDFilter'])
-    }
-    if ($BoundParameters.ContainsKey('ResultSize')) {
-        $Filters.Add('pagelimit={0}' -f $BoundParameters['ResultSize'])
     }
     if ($BoundParameters.ContainsKey('ScanStatus')) {
         $Filters.Add('scanstatusfilter={0}' -f $ScanStatus_Mapping[$BoundParameters['ScanStatus']])

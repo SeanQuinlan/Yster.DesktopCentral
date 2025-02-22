@@ -62,12 +62,6 @@ function Get-DCComputerInventory {
         [String]
         $LiveStatus,
 
-        # The page of results to return.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Page,
-
         # The Resource ID to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
@@ -114,7 +108,6 @@ function Get-DCComputerInventory {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $PSBoundParameters['ResultSize'] = $ResultSize
         if ($PSBoundParameters.ContainsKey('ResourceID')) {
             [void]$PSBoundParameters.Remove('ResourceID')
             [void]$PSBoundParameters.Add('ResourceIDFilter', $ResourceID)
@@ -126,6 +119,7 @@ function Get-DCComputerInventory {
             'APIPath'              = $API_Path
             'Method'               = 'GET'
             'SkipCertificateCheck' = $SkipCertificateCheck
+            'ResultSize'           = $ResultSize
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters

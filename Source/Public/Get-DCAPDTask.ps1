@@ -10,8 +10,6 @@ function Get-DCAPDTask {
         Returns all the APD tasks.
     .NOTES
         https://www.manageengine.com/patch-management/api/list-apd-task.html
-
-        Returns no results if ResultSize is set to 0, so set it a very high number instead.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'None')]
@@ -35,19 +33,13 @@ function Get-DCAPDTask {
         [String]
         $HostName,
 
-        # The page of results to return.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Page,
-
         # Limit the number of results that are returned.
         # The default is to return all results.
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [Alias('Limit', 'PageLimit')]
         [Int]
-        $ResultSize = 1000000,
+        $ResultSize = 0,
 
         # The name of the field to search on.
         [Parameter(Mandatory = $false)]
@@ -74,7 +66,6 @@ function Get-DCAPDTask {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $PSBoundParameters['ResultSize'] = $ResultSize
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/apdTaskListdetails'
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
@@ -82,6 +73,7 @@ function Get-DCAPDTask {
             'APIPath'              = $API_Path
             'Method'               = 'GET'
             'SkipCertificateCheck' = $SkipCertificateCheck
+            'ResultSize'           = $ResultSize
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters
