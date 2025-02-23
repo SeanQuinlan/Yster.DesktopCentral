@@ -73,12 +73,6 @@ function Get-DCComputerScanning {
         [String]
         $LiveStatus,
 
-        # The page of results to return.
-        [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [Int]
-        $Page,
-
         # The Platform to filter on.
         [Parameter(Mandatory = $false)]
         [ValidateSet('Mac', 'Windows', 'Linux')]
@@ -125,7 +119,6 @@ function Get-DCComputerScanning {
     $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose ('{0}|Arguments: {1} - {2}' -f $Function_Name, $_.Key, ($_.Value -join ' ')) }
 
     try {
-        $PSBoundParameters['ResultSize'] = $ResultSize
         $API_Path = Add-Filters -BoundParameters $PSBoundParameters -BaseURL 'patch/scandetails'
         $Query_Parameters = @{
             'AuthToken'            = $AuthToken
@@ -133,6 +126,7 @@ function Get-DCComputerScanning {
             'APIPath'              = $API_Path
             'Method'               = 'GET'
             'SkipCertificateCheck' = $SkipCertificateCheck
+            'ResultSize'           = $ResultSize
         }
         Write-Verbose ('{0}|Calling Invoke-DCQuery' -f $Function_Name)
         $Query_Return = Invoke-DCQuery @Query_Parameters

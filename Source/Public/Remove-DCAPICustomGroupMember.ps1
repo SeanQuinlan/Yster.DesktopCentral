@@ -89,7 +89,7 @@ function Remove-DCAPICustomGroupMember {
             Write-Verbose ('{0}|Calling Get-DCAPIComputer' -f $Function_Name)
             $All_Computers = Get-DCAPIComputer @Common_Parameters | Group-Object -Property 'computerName' -AsHashTable
 
-            $Failed_Resource = New-Object -TypeName System.Collections.Generic.List[String]
+            $Failed_Resource = New-Object -TypeName 'System.Collections.Generic.List[String]'
             foreach ($Resource in $ResourceName) {
                 if ($All_Computers[$Resource]) {
                     $ResourceID += $All_Computers[$Resource].computerID
