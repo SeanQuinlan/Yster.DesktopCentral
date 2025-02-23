@@ -26,4 +26,4 @@ build_script:
 
 environment:
   NugetApiKey:
-    secure: bPXKlnlPiO0CVtFP06Y0UoFTfiRTX5ZeGGXVW6iM8b2WuBI0mipXdsZmHpy+c49z
+    secure: WeQ2fy7wxBXI/oQ25VV7SeUM259EODE+kSoIeLq84rHOcIQiC2vsolm0KxZICMpP
