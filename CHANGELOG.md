@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1.0] Unreleased
+Testing release
+
+## [0.2.0] First Release
+First public release of the module
 
 ## [0.3.0] OTP Fixes + PS7 updates
 Fixed the OTP code for codes sent via email.
